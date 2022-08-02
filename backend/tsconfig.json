@@ -12,8 +12,9 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@routes/*": ["routes/*"],
-      "@src/*": ["./src/*"]
+      "@routes/*": ["./src/routes/*"],
+      "@src/*": ["./src/*"],
+      "@controllers/*": ["./src/controllers/*"]
     }
   },
   "include": ["**/*.ts"],
