@@ -4,7 +4,7 @@ import path from 'path';
 // Import middleware
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import { ApplicationError, handleErrors } from 'middleware/errorHandler';
+import { ApplicationError, handleErrors } from '@src/middleware/errorHandler';
 
 import router from '@routes/index';
 

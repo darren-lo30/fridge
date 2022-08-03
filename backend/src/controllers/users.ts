@@ -1,8 +1,8 @@
 import express from 'express';
 import prisma from '@src/prisma';
-import validateAndSantizeRequest from 'middleware/requestValidator';
+import validateAndSantizeRequest from '@src/middleware/requestValidator';
 import { Schema } from 'express-validator';
-import { ApplicationError } from 'middleware/errorHandler';
+import { ApplicationError } from '@src/middleware/errorHandler';
 import { hashPassword } from '@src/utils/passwordUtils';
 import passport from 'passport';
 
@@ -44,7 +44,8 @@ const signUp = [
 const signIn = [
   validateAndSantizeRequest(signInRequestSchema),
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    passport.authenticate('local', (err, user, info) => {
+    await passport.authenticate('local', (err, user, info) => {
+      console.log('hi');
       if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
 
       if (!user) {
