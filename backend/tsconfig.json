@@ -12,11 +12,16 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@routes/*": ["./src/routes/*"],
-      "@src/*": ["./src/*"],
-      "@controllers/*": ["./src/controllers/*"]
+      "@routes/*": ["src/routes/*"],
+      "@src/*": ["src/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@config/*": ["src/config/*"]
     }
   },
+  "ts-node": {
+    "files": true,
+  },
+  "files": ["src/env.d.ts"],
   "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

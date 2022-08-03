@@ -11,7 +11,7 @@ const validateAndSantizeRequest = (schema: Schema) => async (
   const validationErrors = validationResult(req);
 
   if (validationErrors.array().length > 0) {
-    return next(new ApplicationError(400, 'Bad request'));
+    return next(new ApplicationError(400, 'Bad request payload'));
   }
 
   return next();

@@ -3,26 +3,35 @@ import prisma from '@src/prisma';
 import validateAndSantizeRequest from 'middleware/requestValidator';
 import { Schema } from 'express-validator';
 import { ApplicationError } from 'middleware/errorHandler';
+import { hashPassword } from '@src/utils/passwordUtils';
+import passport from 'passport';
 
-const createUserRequestSchema: Schema = {
-  fullName: {
-    isString: true,
-  },
+const signInRequestSchema: Schema = {
   email: {
     isEmail: true,
   },
+  password: {
+    isString: true,
+  },
 };
 
-const createUser = [
-  validateAndSantizeRequest(createUserRequestSchema),
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const { fullName, email } = req.body;
+const signUpRequestSchema: Schema = {
+  fullName: {
+    isString: true,
+  },
+  ...signInRequestSchema,
+};
 
+const signUp = [
+  validateAndSantizeRequest(signUpRequestSchema),
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { fullName, email, password } = req.body;
     try {
       await prisma.user.create({
         data: {
           fullName,
           email,
+          password: await hashPassword(password),
         },
       });
 
@@ -32,9 +41,21 @@ const createUser = [
     }
   }];
 
-const getUser = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const signIn = [
+  validateAndSantizeRequest(signInRequestSchema),
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
 
-};
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials.' });
+      }
+
+      // User has successfully signed in
+      return res.status(200);
+    });
+  },
+];
 
 const indexUsers = async (
   req: express.Request,
@@ -52,8 +73,13 @@ const indexUsers = async (
   }
 };
 
+const getUser = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+
+};
+
 export {
-  createUser,
-  getUser,
+  signUp,
+  signIn,
   indexUsers,
+  getUser,
 };
