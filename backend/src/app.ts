@@ -12,8 +12,8 @@ import router from '@routes/index';
 import 'dotenv/config';
 
 // Include passport and passport configs
-import '@config/passport';
 import passport from 'passport';
+import '@config/passport';
 
 // Import prisma database and module for session store
 import prisma from '@src/prisma';
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: getEnvVar('NODE_ENV'),
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: new PrismaSessionStore(
     // @ts-ignore -> typing bug with the the package
     prisma,

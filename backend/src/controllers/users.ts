@@ -35,7 +35,7 @@ const signUp = [
         },
       });
 
-      return res.status(201).end();
+      return res.sendStatus(201);
     } catch (error) {
       return next(new ApplicationError(500, 'Error occurred while creating user'));
     }
@@ -43,19 +43,26 @@ const signUp = [
 
 const signIn = [
   validateAndSantizeRequest(signInRequestSchema),
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    await passport.authenticate('local', (err, user, info) => {
-      console.log('hi');
-      if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
+  async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => passport.authenticate('local', (err, user, info) => {
+    if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
 
-      if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials.' });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials.' });
+    }
+
+    return req.login(user, (loginErr) => {
+      if (loginErr) {
+        return res.status(401).json(loginErr);
       }
 
       // User has successfully signed in
-      return res.status(200);
+      return res.status(200).json({ message: 'User sign in was successful.' });
     });
-  },
+  })(req, res, next),
 ];
 
 const indexUsers = async (
