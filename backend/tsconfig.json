@@ -21,7 +21,7 @@
   "ts-node": {
     "files": true,
   },
-  "files": ["src/env.d.ts"],
+  "files": ["src/env.d.ts", "src/req.d.ts"],
   "include": ["**/*.ts"],
   "exclude": ["node_modules"],
 }

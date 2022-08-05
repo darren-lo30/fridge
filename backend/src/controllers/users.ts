@@ -27,15 +27,18 @@ const signUp = [
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const { fullName, email, password } = req.body;
     try {
-      await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           fullName,
           email,
           password: await hashPassword(password),
+          fridge: {
+            create: {},
+          },
         },
       });
 
-      return res.sendStatus(201);
+      return res.status(201).json({ user });
     } catch (error) {
       return next(new ApplicationError(500, 'Error occurred while creating user'));
     }
@@ -60,34 +63,31 @@ const signIn = [
       }
 
       // User has successfully signed in
-      return res.status(200).json({ message: 'User sign in was successful.' });
+      return res.status(200).json({ user, message: 'User sign in was successful.' });
     });
   })(req, res, next),
 ];
 
-const indexUsers = async (
+const getUser = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
   try {
-    const users = await prisma.user.findMany();
-
-    return res.json({ users });
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Unable to query users',
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.params.userId,
+      },
     });
+
+    return res.json({ user });
+  } catch (e) {
+    return next(new ApplicationError(404, 'User could not be found'));
   }
-};
-
-const getUser = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-
 };
 
 export {
   signUp,
   signIn,
-  indexUsers,
   getUser,
 };

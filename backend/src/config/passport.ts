@@ -2,7 +2,7 @@ import passport from 'passport';
 import passportLocal from 'passport-local';
 import prisma from '@src/prisma';
 import { isValidPassword } from '@src/utils/passwordUtils';
-import { Prisma } from '@prisma/client';
+import { User } from '@prisma/client';
 
 const LocalStrategy = passportLocal.Strategy;
 
@@ -34,7 +34,7 @@ passport.use(new LocalStrategy(
   },
 ));
 
-passport.serializeUser(async (user: Prisma.UserSelect, cb) => {
+passport.serializeUser(async (user: User, cb) => {
   cb(null, user.id);
 });
 
