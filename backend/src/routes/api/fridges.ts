@@ -1,9 +1,8 @@
 import express from 'express';
 
-import { getFridge, updateFridge } from '@controllers/fridge';
+import { getFridge } from '@controllers/fridgesController';
 import { withOwnership } from '@src/middleware/restrictionMiddleware';
 
 const router = express.Router({ mergeParams: true });
-router.get('/', getFridge);
-router.patch('/', withOwnership, updateFridge);
+router.get('/', withOwnership, getFridge);
 export default router;

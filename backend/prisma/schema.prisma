@@ -11,31 +11,27 @@ datasource db {
 }
 
 model Session {
-  id          String    @id
-  sid         String    @unique
-  expiresAt   DateTime
-  data        String
+  id        String   @id
+  sid       String   @unique
+  expiresAt DateTime
+  data      String
 }
 
 model User {
-  id          String    @id @default(uuid())
-  fullName    String  
-  email       String    @unique
-  password    String 
-  fridge      Fridge? 
-  // recipes     Recipe[]
+  id       String   @id @default(uuid())
+  fullName String
+  email    String   @unique
+  password String
+  fridge   Fridge?
+  recipes  Recipe[]
 }
-
 
 model Fridge {
-  id            String        @id @default(uuid())
-  
-  userId        String        @unique
-  user          User          @relation(fields: [userId], references: [id])
-
-  ingredients   Ingredient[]  
+  id          String       @id @default(uuid())
+  userId      String       @unique
+  user        User         @relation(fields: [userId], references: [id])
+  ingredients Ingredient[]
 }
-
 
 enum IngredientMeasurement {
   discrete
@@ -45,32 +41,34 @@ enum IngredientMeasurement {
 
 // Server generate instances of ingredients
 model IngredientType {
-  id                  String                  @id @default(uuid())
-  name                String                  
-  ingredientInstances Ingredient[]           
+  id                  String       @id @default(uuid())
+  name                String
+  ingredientInstances Ingredient[]
+
+  measurementType     IngredientMeasurement
 }
 
 // Instances of IngredientType stored in the fridge
 model Ingredient {
-  id                  String                  @id @default(uuid())
-  
-  ingredientTypeId    String        
-  ingredientType      IngredientType          @relation(fields: [ingredientTypeId], references: [id])
-
-  fridgeId            String                
-  fridge              Fridge                  @relation(fields: [fridgeId], references: [id])
-
-  measurementType     IngredientMeasurement        
-  amount              Decimal                 @default(0.0)
+  id               String                @id @default(uuid())
+  ingredientTypeId String
+  ingredientType   IngredientType        @relation(fields: [ingredientTypeId], references: [id])
+  fridgeId         String?
+  fridge           Fridge?               @relation(fields: [fridgeId], references: [id])
+  recipeId         String?
+  recipe           Recipe?               @relation(fields: [recipeId], references: [id])
+  amount           Decimal               @default(0.0)
 
   // Every fridge can only list an ingredient type once
   @@unique([ingredientTypeId, fridgeId])
 }
 
-// model Recipe {
-//   id            String      @id @default(uuid())
-//   name          String
-  
-//   authorId      String
-//   author        User        @relation(fields: [authorId], references: [id])
-// }
+model Recipe {
+  id           String @id @default(uuid())
+  name         String
+  authorId     String
+  author       User   @relation(fields: [authorId], references: [id])
+  instructions String
+  postedDate   DateTime @default(now())
+  ingredients  Ingredient[]
+}

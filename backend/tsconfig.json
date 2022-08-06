@@ -15,13 +15,14 @@
       "@routes/*": ["src/routes/*"],
       "@src/*": ["src/*"],
       "@controllers/*": ["src/controllers/*"],
-      "@config/*": ["src/config/*"]
+      "@config/*": ["src/config/*"],
+      "@validators/*": ["src/validators/*"],
     }
   },
   "ts-node": {
     "files": true,
   },
-  "files": ["src/env.d.ts", "src/req.d.ts"],
+  "files": ["src/env.d.ts", "src/express.d.ts"],
   "include": ["**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"], 
 }

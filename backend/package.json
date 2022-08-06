@@ -6,6 +6,10 @@
     "dev": "nodemon",
     "build": "tsc"
   },
+  "prisma": {
+    "editor.defaultFormatter": "Prisma.prisma",
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^4.1.1",
     "@quixo3/prisma-session-store": "^3.1.8",

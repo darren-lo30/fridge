@@ -1,27 +1,12 @@
 import express from 'express';
 import prisma from '@src/prisma';
 import validateAndSantizeRequest from '@src/middleware/requestValidator';
-import { Schema } from 'express-validator';
+import { signInSchema, signUpSchema } from '@src/validators/usersValidator';
 import { ApplicationError } from '@src/middleware/errorHandler';
 import { hashPassword } from '@src/utils/passwordUtils';
 import passport from 'passport';
 
-const signInSchema: Schema = {
-  email: {
-    isEmail: true,
-  },
-  password: {
-    isString: true,
-  },
-};
-
-const signUpSchema: Schema = {
-  fullName: {
-    isString: true,
-  },
-  ...signInSchema,
-};
-
+// Sign up routine for user
 const signUp = [
   validateAndSantizeRequest(signUpSchema),
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -44,6 +29,7 @@ const signUp = [
     }
   }];
 
+// Sign in routine for user
 const signIn = [
   validateAndSantizeRequest(signInSchema),
   async (
@@ -51,12 +37,15 @@ const signIn = [
     res: express.Response,
     next: express.NextFunction,
   ) => passport.authenticate('local', (err, user, info) => {
+    // Uses passport local authentication which is based on sessions
+
     if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials.' });
     }
 
+    // Login routine sets the session cookie for the user
     return req.login(user, (loginErr) => {
       if (loginErr) {
         return res.status(401).json(loginErr);
@@ -68,6 +57,7 @@ const signIn = [
   })(req, res, next),
 ];
 
+// Gets a user based on the userId in the URL
 const getUser = async (
   req: express.Request,
   res: express.Response,
