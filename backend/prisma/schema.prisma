@@ -23,6 +23,7 @@ model User {
   email       String    @unique
   password    String 
   fridge      Fridge? 
+  // recipes     Recipe[]
 }
 
 
@@ -37,16 +38,16 @@ model Fridge {
 
 
 enum IngredientMeasurement {
-  Discrete
-  Volume
-  Weight
+  discrete
+  volume
+  weight
 }
 
 // Server generate instances of ingredients
 model IngredientType {
   id                  String                  @id @default(uuid())
   name                String                  
-  ingredientInstances Ingredient[]            @ignore
+  ingredientInstances Ingredient[]           
 }
 
 // Instances of IngredientType stored in the fridge
@@ -59,7 +60,17 @@ model Ingredient {
   fridgeId            String                
   fridge              Fridge                  @relation(fields: [fridgeId], references: [id])
 
-  int                 IngredientMeasurement        
+  measurementType     IngredientMeasurement        
   amount              Decimal                 @default(0.0)
 
+  // Every fridge can only list an ingredient type once
+  @@unique([ingredientTypeId, fridgeId])
 }
+
+// model Recipe {
+//   id            String      @id @default(uuid())
+//   name          String
+  
+//   authorId      String
+//   author        User        @relation(fields: [authorId], references: [id])
+// }

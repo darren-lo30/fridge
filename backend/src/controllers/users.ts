@@ -6,7 +6,7 @@ import { ApplicationError } from '@src/middleware/errorHandler';
 import { hashPassword } from '@src/utils/passwordUtils';
 import passport from 'passport';
 
-const signInRequestSchema: Schema = {
+const signInSchema: Schema = {
   email: {
     isEmail: true,
   },
@@ -15,15 +15,15 @@ const signInRequestSchema: Schema = {
   },
 };
 
-const signUpRequestSchema: Schema = {
+const signUpSchema: Schema = {
   fullName: {
     isString: true,
   },
-  ...signInRequestSchema,
+  ...signInSchema,
 };
 
 const signUp = [
-  validateAndSantizeRequest(signUpRequestSchema),
+  validateAndSantizeRequest(signUpSchema),
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const { fullName, email, password } = req.body;
     try {
@@ -45,7 +45,7 @@ const signUp = [
   }];
 
 const signIn = [
-  validateAndSantizeRequest(signInRequestSchema),
+  validateAndSantizeRequest(signInSchema),
   async (
     req: express.Request,
     res: express.Response,
