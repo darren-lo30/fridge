@@ -1,4 +1,4 @@
-# Recipe Advisor
+# Fridge
 
 ## Overview
 This project aims to simplify the process of cooking for yourself. Built with [NextJS](https://nextjs.org/).
