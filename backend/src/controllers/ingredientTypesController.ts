@@ -10,16 +10,20 @@ const indexIngredientTypes = async (
 ) => {
   const findManyArgs : Prisma.IngredientTypeFindManyArgs = {};
 
-  if (req.query.limit && typeof req.query.limit === 'string') {
-    if (Number.isNaN(req.query.offset)) return next(new ApplicationError(400, 'The limit must be an integer.'));
-    findManyArgs.take = Number.parseInt(req.query.limit, 10);
+  const { limit, cursor, offset } = req.query;
+
+  if (limit && typeof limit === 'string') {
+    const parsedLimit = parseInt(limit, 10);
+    if (Number.isNaN(parsedLimit) || parsedLimit < 0) return next(new ApplicationError(400, 'The limit must be a positive integer.'));
+    findManyArgs.take = parseInt(limit, 10);
   }
 
-  if (req.query.offset && typeof req.query.offset === 'string') {
-    if (Number.isNaN(req.query.offset)) return next(new ApplicationError(400, 'The offset must be an integer.'));
-    findManyArgs.skip = Number.parseInt(req.query.offset, 10);
-  } else if (req.query.cursor && typeof req.query.cursor === 'string') {
-    findManyArgs.cursor = { id: req.query.cursor };
+  if (offset && typeof offset === 'string') {
+    const parsedOffset = parseInt(offset, 10);
+    if (Number.isNaN(parsedOffset) || parsedOffset < 0) return next(new ApplicationError(400, 'The offset must be a positive integer.'));
+    findManyArgs.skip = parsedOffset;
+  } else if (cursor && typeof cursor === 'string') {
+    findManyArgs.cursor = { id: cursor };
     findManyArgs.skip = 1;
   }
 
