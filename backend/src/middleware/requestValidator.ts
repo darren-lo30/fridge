@@ -11,7 +11,8 @@ const validateAndSantizeRequest = (schema: Schema) => async (
   const validationErrors = validationResult(req);
 
   if (validationErrors.array().length > 0) {
-    return next(new ApplicationError(400, 'Bad request payload'));
+    const invalidParams : string = Array.from(new Set(validationErrors.array().map((e) => e.param))).join(', ');
+    return next(new ApplicationError(400, `Invalid parameters for fields: ${invalidParams}`));
   }
 
   return next();

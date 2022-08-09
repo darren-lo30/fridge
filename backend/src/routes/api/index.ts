@@ -1,20 +1,21 @@
 import express from 'express';
 
-import { withAuth, withOwnership, withRecipeOwnership } from '@src/middleware/restrictionMiddleware';
+import { withAuth } from '@src/middleware/restrictionMiddleware';
 import usersRouter from './users';
 import authRouter from './auth';
 import fridgesRouter from './fridges';
 import recipesRouter from './recipes';
 import ingredientsRouter from './ingredients';
+import ingredientTypesRouter from './ingredientTypes';
+import measurementUnitsRouter from './measurementUnits';
 
 const router = express.Router();
 
 router.use('/', authRouter);
-router.use('/users/:userId/fridges', withAuth, fridgesRouter);
-router.use('/users/:userId/fridges/ingredients', withAuth, withOwnership, ingredientsRouter);
 router.use('/users', withAuth, usersRouter);
-
-router.use('/recipes', recipesRouter);
-router.use('/recipes/:recipeId/ingredients', withAuth, withRecipeOwnership, ingredientsRouter);
-
+router.use('/fridges', withAuth, fridgesRouter);
+router.use('/recipes', withAuth, recipesRouter);
+router.use('/ingredients', withAuth, ingredientsRouter);
+router.use('/ingredientTypes', ingredientTypesRouter);
+router.use('/measurementUnits', measurementUnitsRouter);
 export default router;

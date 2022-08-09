@@ -3,7 +3,7 @@ import express from 'express';
 import { assertIsAuthed } from '@src/utils/assertions';
 import { ApplicationError } from '@src/middleware/errorHandler';
 
-const getFridge = async (
+const getUserFridge = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
@@ -28,5 +28,6 @@ const getFridge = async (
 };
 
 export {
-  getFridge,
+  // getFridge,
+  getUserFridge,
 };

@@ -34,41 +34,50 @@ model Fridge {
 }
 
 enum IngredientMeasurement {
-  discrete
-  volume
-  weight
+  discrete // defaults to number
+  volume // defaults to mL
+  weight // defaults to grams
 }
 
 // Server generate instances of ingredients
 model IngredientType {
   id                  String       @id @default(uuid())
-  name                String
+  name                String       @unique
   ingredientInstances Ingredient[]
 
-  measurementType     IngredientMeasurement
+  measurementType IngredientMeasurement
+}
+
+model MeasurementUnit {
+  id              String                @id @default(uuid())
+  measurementType IngredientMeasurement
+  unitName        String                @unique
+  ingredients     Ingredient[]
 }
 
 // Instances of IngredientType stored in the fridge
 model Ingredient {
-  id               String                @id @default(uuid())
-  ingredientTypeId String
-  ingredientType   IngredientType        @relation(fields: [ingredientTypeId], references: [id])
-  fridgeId         String?
-  fridge           Fridge?               @relation(fields: [fridgeId], references: [id])
-  recipeId         String?
-  recipe           Recipe?               @relation(fields: [recipeId], references: [id])
-  amount           Decimal               @default(0.0)
+  id                String          @id @default(uuid())
+  ingredientTypeId  String
+  ingredientType    IngredientType  @relation(fields: [ingredientTypeId], references: [id])
+  fridgeId          String?
+  fridge            Fridge?         @relation(fields: [fridgeId], references: [id])
+  recipeId          String?
+  recipe            Recipe?         @relation(fields: [recipeId], references: [id])
+  amount            Decimal
+  measurementUnitId String
+  measurementUnit   MeasurementUnit @relation(fields: [measurementUnitId], references: [id])
 
   // Every fridge can only list an ingredient type once
   @@unique([ingredientTypeId, fridgeId])
 }
 
 model Recipe {
-  id           String @id @default(uuid())
+  id           String       @id @default(uuid())
   name         String
   authorId     String
-  author       User   @relation(fields: [authorId], references: [id])
+  author       User         @relation(fields: [authorId], references: [id])
   instructions String
-  postedDate   DateTime @default(now())
+  postedDate   DateTime     @default(now())
   ingredients  Ingredient[]
 }

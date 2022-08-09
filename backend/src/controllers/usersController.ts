@@ -5,6 +5,8 @@ import { signInSchema, signUpSchema } from '@src/validators/usersValidator';
 import { ApplicationError } from '@src/middleware/errorHandler';
 import { hashPassword } from '@src/utils/passwordUtils';
 import passport from 'passport';
+import { assertExists } from '@src/utils/assertions';
+import { User } from '@prisma/client';
 
 // Sign up routine for user
 const signUp = [
@@ -23,9 +25,12 @@ const signUp = [
         },
       });
 
-      return res.status(201).json({ user });
-    } catch (error) {
-      return next(new ApplicationError(500, 'Error occurred while creating user'));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: removedPassword, ...returnUser } = user;
+
+      return res.status(201).json({ user: returnUser });
+    } catch (err) {
+      return next(ApplicationError.constructFromDbError(err));
     }
   }];
 
@@ -36,7 +41,7 @@ const signIn = [
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
-  ) => passport.authenticate('local', (err, user, info) => {
+  ) => passport.authenticate('local', (err, user: User, info) => {
     // Uses passport local authentication which is based on sessions
 
     if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
@@ -51,8 +56,11 @@ const signIn = [
         return res.status(401).json(loginErr);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...returnUser } = user;
+
       // User has successfully signed in
-      return res.status(200).json({ user, message: 'User sign in was successful.' });
+      return res.status(200).json({ user: returnUser, message: 'User sign in was successful.' });
     });
   })(req, res, next),
 ];
@@ -63,17 +71,22 @@ const getUser = async (
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: req.params.userId,
-      },
-    });
+  assertExists(req.params.userId);
 
-    return res.json({ user });
-  } catch (e) {
-    return next(new ApplicationError(404, 'User could not be found'));
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.params.userId,
+    },
+  });
+
+  if (!user) {
+    return next(new ApplicationError(404, 'User could not be found.'));
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...returnUser } = user;
+
+  return res.json({ user: returnUser });
 };
 
 export {

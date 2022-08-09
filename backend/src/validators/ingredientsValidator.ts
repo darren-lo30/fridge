@@ -11,11 +11,19 @@ const createIngredientSchema: Schema = {
     exists: true,
     toFloat: true,
   },
+  measurementUnitId: {
+    isString: true,
+    exists: true,
+  },
 };
 
 const updateIngredientSchema: Schema = {
   amount: {
     isDecimal: true,
+    optional: true,
+  },
+  measurementUnitId: {
+    isString: true,
     optional: true,
   },
 };

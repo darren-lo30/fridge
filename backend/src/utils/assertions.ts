@@ -2,7 +2,7 @@ import express from 'express';
 import { User } from '@prisma/client';
 
 function assertExists<Type>(value: any) : asserts value is NonNullable<Type> {
-  if (value === null || value === undefined) throw new Error('asdsa');
+  if (value === null || value === undefined) throw new Error('A parameter was not found.');
 }
 
 type AuthedRequest = express.Request & { user: User };

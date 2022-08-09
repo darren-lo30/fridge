@@ -13,14 +13,11 @@ const createIngredient = [
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    assertExists<string>(req.params.userId);
+    assertExists<string>(req.params.fridgeId);
 
     const fridge = await prisma.fridge.findUnique({
       where: {
-        userId: req.params.userId,
-      },
-      include: {
-        ingredients: true,
+        id: req.params.fridgeId,
       },
     });
 
@@ -28,7 +25,7 @@ const createIngredient = [
       return next(new ApplicationError(404, 'Fridge could not be found.'));
     }
 
-    const { ingredientTypeId, amount } = req.body;
+    const { ingredientTypeId, amount, measurementUnitId } = req.body;
 
     try {
       const ingredient = await prisma.ingredient.create({
@@ -36,12 +33,13 @@ const createIngredient = [
           fridgeId: fridge.id,
           ingredientTypeId,
           amount,
+          measurementUnitId,
         },
       });
 
       return res.json({ ingredient });
-    } catch (e) {
-      return next(new ApplicationError(400, 'Bad request payload.'));
+    } catch (err) {
+      return next(ApplicationError.constructFromDbError(err));
     }
   }];
 
@@ -55,7 +53,7 @@ const updateIngredient = [
     assertExists(req.params.ingredientId);
 
     const { ingredientId } = req.params;
-    const { amount } : Prisma.IngredientUpdateInput = (req.body);
+    const { amount, measurementUnitId } : Prisma.IngredientUncheckedUpdateInput = (req.body);
 
     try {
       const ingredient = await prisma.ingredient.update({
@@ -64,12 +62,13 @@ const updateIngredient = [
         },
         data: {
           amount,
+          measurementUnitId,
         },
       });
 
       return res.status(200).json({ ingredient });
-    } catch (e) {
-      return res.status(404).json({ message: 'Ingredient could not be found.' });
+    } catch (err) {
+      return next(ApplicationError.constructFromDbError(err));
     }
   }];
 
@@ -90,8 +89,8 @@ const deleteIngredient = [
       });
 
       return res.status(200).json({ message: 'Ingredient was successfully deleted' });
-    } catch (e) {
-      return next(new ApplicationError(404, 'Ingredient could not be found.'));
+    } catch (err) {
+      return next(ApplicationError.constructFromDbError(err));
     }
   }];
 

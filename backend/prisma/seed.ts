@@ -40,6 +40,35 @@ async function main() {
     });
   });
 
+  const measurementUnitData : Prisma.MeasurementUnitCreateInput[] = [
+    {
+      measurementType: 'discrete',
+      unitName: 'number',
+    },
+    {
+      measurementType: 'weight',
+      unitName: 'kg',
+    },
+    {
+      measurementType: 'weight',
+      unitName: 'lb',
+    },
+    {
+      measurementType: 'volume',
+      unitName: 'L',
+    },
+    {
+      measurementType: 'volume',
+      unitName: 'oz',
+    },
+  ];
+
+  measurementUnitData.forEach(async (i) => {
+    await prisma.measurementUnit.create({
+      data: i,
+    });
+  });
+
   console.log('Seeding finished.');
 }
 
