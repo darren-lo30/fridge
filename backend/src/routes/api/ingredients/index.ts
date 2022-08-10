@@ -6,6 +6,6 @@ import { withIngredientOwnership } from '@src/middleware/restrictionMiddleware';
 const router = express.Router({ mergeParams: true });
 
 router.patch('/:ingredientId', withIngredientOwnership, updateIngredient);
-router.delete('/:ingredientId', deleteIngredient);
+router.delete('/:ingredientId', withIngredientOwnership, deleteIngredient);
 
 export default router;

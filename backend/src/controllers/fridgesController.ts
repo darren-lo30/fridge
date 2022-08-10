@@ -1,6 +1,5 @@
 import prisma from '@src/prisma';
 import express from 'express';
-import { assertIsAuthed } from '@src/utils/assertions';
 import { ApplicationError } from '@src/middleware/errorHandler';
 
 const getUserFridge = async (
@@ -8,23 +7,19 @@ const getUserFridge = async (
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  assertIsAuthed(req);
-
-  // Finds the fridge belonging to the user indicated in the URL
-  const fridge = await prisma.fridge.findUnique({
-    where: {
-      userId: req.params.userId,
-    },
-    include: {
-      ingredients: true,
-    },
-  });
-
-  if (!fridge) {
-    return next(new ApplicationError(404, 'Fridge could not be found.'));
+  try {
+    const fridge = await prisma.fridge.findUniqueOrThrow({
+      where: {
+        userId: req.params.userId,
+      },
+      include: {
+        ingredients: true,
+      },
+    });
+    return res.json({ fridge });
+  } catch (err) {
+    return next(ApplicationError.constructFromDbError(err));
   }
-
-  return res.json({ fridge });
 };
 
 export {

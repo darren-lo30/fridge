@@ -1,76 +1,74 @@
-import { Prisma } from '@prisma/client';
 import { ApplicationError } from '@src/middleware/errorHandler';
-import validateAndSantizeRequest from '@src/middleware/requestValidator';
+import { parseRequest } from '@src/middleware/requestValidator';
 import prisma from '@src/prisma';
-import { assertExists } from '@src/utils/assertions';
-import { createIngredientSchema, updateIngredientSchema } from '@src/validators/ingredientsValidator';
+import { createIngredientSchema, deleteIngredientSchema, updateIngredientSchema } from '@src/validators/ingredientsValidator';
 import express from 'express';
 
-const createIngredient = [
-  validateAndSantizeRequest(createIngredientSchema),
-  async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    assertExists<string>(req.params.fridgeId);
+const createIngredient = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const {
+    params: {
+      fridgeId,
+    },
+    body:
+    {
+      amount,
+      ingredientTypeId,
+      measurementUnitId,
+    },
+  } = await parseRequest(createIngredientSchema, req);
 
-    const fridge = await prisma.fridge.findUnique({
+  try {
+    const fridge = await prisma.fridge.findUniqueOrThrow({
       where: {
-        id: req.params.fridgeId,
+        id: fridgeId,
       },
     });
 
-    if (!fridge) {
-      return next(new ApplicationError(404, 'Fridge could not be found.'));
-    }
+    const ingredient = await prisma.ingredient.create({
+      data: {
+        fridgeId: fridge.id,
+        ingredientTypeId,
+        amount,
+        measurementUnitId,
+      },
+    });
 
-    const { ingredientTypeId, amount, measurementUnitId } = req.body;
+    return res.json({ ingredient });
+  } catch (err) {
+    return next(ApplicationError.constructFromDbError(err));
+  }
+};
 
-    try {
-      const ingredient = await prisma.ingredient.create({
-        data: {
-          fridgeId: fridge.id,
-          ingredientTypeId,
-          amount,
-          measurementUnitId,
-        },
-      });
+const updateIngredient = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const {
+    params: { ingredientId },
+    body: { amount, measurementUnitId },
+  } = await parseRequest(updateIngredientSchema, req);
 
-      return res.json({ ingredient });
-    } catch (err) {
-      return next(ApplicationError.constructFromDbError(err));
-    }
-  }];
+  try {
+    const ingredient = await prisma.ingredient.update({
+      where: {
+        id: ingredientId,
+      },
+      data: {
+        amount,
+        measurementUnitId,
+      },
+    });
 
-const updateIngredient = [
-  validateAndSantizeRequest(updateIngredientSchema),
-  async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    assertExists(req.params.ingredientId);
-
-    const { ingredientId } = req.params;
-    const { amount, measurementUnitId } : Prisma.IngredientUncheckedUpdateInput = (req.body);
-
-    try {
-      const ingredient = await prisma.ingredient.update({
-        where: {
-          id: ingredientId,
-        },
-        data: {
-          amount,
-          measurementUnitId,
-        },
-      });
-
-      return res.status(200).json({ ingredient });
-    } catch (err) {
-      return next(ApplicationError.constructFromDbError(err));
-    }
-  }];
+    return res.status(200).json({ ingredient });
+  } catch (err) {
+    return next(ApplicationError.constructFromDbError(err));
+  }
+};
 
 const deleteIngredient = [
   async (
@@ -78,9 +76,8 @@ const deleteIngredient = [
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    assertExists(req.params.ingredientId);
+    const { params: { ingredientId } } = await parseRequest(deleteIngredientSchema, req);
 
-    const { ingredientId } = req.params;
     try {
       await prisma.ingredient.delete({
         where: {

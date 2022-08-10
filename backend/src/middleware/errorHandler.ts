@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import express from 'express';
+import { ZodError } from 'zod';
 
 class ApplicationError extends Error {
   statusCode : number;
@@ -13,10 +14,12 @@ class ApplicationError extends Error {
     this.statusCode = statusCode;
     this.message = message;
     this.data = data;
+
+    Object.setPrototypeOf(this, ApplicationError.prototype);
   }
 
   static constructFromDbError(dbError: any) : ApplicationError {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.LOG_ERRORS === 'true') {
       // eslint-disable-next-line no-console
       console.log(dbError);
     }
@@ -31,8 +34,8 @@ class ApplicationError extends Error {
     if (dbError instanceof Prisma.PrismaClientKnownRequestError) {
       if (dbError.code === 'P2003') {
         return new ApplicationError(
-          500,
-          'A provided reference ID is invalid',
+          400,
+          'A provided reference ID is invalid.',
           dbError.meta,
         );
       }
@@ -40,7 +43,15 @@ class ApplicationError extends Error {
       if (dbError.code === 'P2025') {
         return new ApplicationError(
           404,
-          'Resource not found',
+          'Resource not found.',
+          dbError.meta,
+        );
+      }
+
+      if (dbError.code === 'P2002') {
+        return new ApplicationError(
+          409,
+          'Resource already exists.',
           dbError.meta,
         );
       }
@@ -48,21 +59,40 @@ class ApplicationError extends Error {
 
     return new ApplicationError(
       500,
-      'Unexpected error occurred.',
+      'An unexpected error occurred.',
+    );
+  }
+
+  static constructFromZodError(validationError: ZodError) : ApplicationError {
+    if (process.env.LOG_ERRORS === 'true') {
+      // eslint-disable-next-line no-console
+      console.log(validationError);
+    }
+
+    return new ApplicationError(
+      400,
+      'Parameters sent were invalid for the request',
+      validationError,
     );
   }
 }
 
 const handleErrors = (
-  err: ApplicationError,
+  err: any,
+  req: express.Request,
   res: express.Response,
+  next: express.NextFunction,
 ) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.LOG_ERRORS === 'true') {
     // eslint-disable-next-line no-console
     console.log(err);
   }
 
-  return res.status(err.statusCode).json({ ...err });
+  if (err instanceof ApplicationError) {
+    return res.status(err.statusCode).json({ ...err });
+  }
+
+  return res.status(500).json({ message: 'An unexpected error occured.' });
 };
 export {
   ApplicationError,

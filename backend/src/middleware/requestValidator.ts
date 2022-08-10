@@ -1,21 +1,37 @@
+import { AnyZodObject, z, ZodError } from 'zod';
 import express from 'express';
-import { checkSchema, Schema, validationResult } from 'express-validator';
+
 import { ApplicationError } from './errorHandler';
 
-const validateAndSantizeRequest = (schema: Schema) => async (
+const validateRequest = (schema : AnyZodObject) => async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  await checkSchema(schema).run(req);
-  const validationErrors = validationResult(req);
-
-  if (validationErrors.array().length > 0) {
-    const invalidParams : string = Array.from(new Set(validationErrors.array().map((e) => e.param))).join(', ');
-    return next(new ApplicationError(400, `Invalid parameters for fields: ${invalidParams}`));
+  try {
+    schema.parse(req);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      throw ApplicationError.constructFromZodError(err);
+    }
+    throw err;
   }
 
-  return next();
+  next();
 };
 
-export default validateAndSantizeRequest;
+const parseRequest = async <T extends AnyZodObject>(
+  schema: T,
+  req: express.Request,
+): Promise<z.infer<T>> => {
+  try {
+    return schema.parse(req);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      throw ApplicationError.constructFromZodError(err);
+    }
+    throw err;
+  }
+};
+
+export { parseRequest, validateRequest };

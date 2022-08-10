@@ -58,18 +58,9 @@ app.use(passport.session());
 app.use('/', router);
 
 // Throws a 404 error if the request did not match an endpoint in the router
-app.use((req, res, next) => {
-  next(new ApplicationError(404, 'Endpoint not found'));
-});
+app.use((req, res, next) => next(new ApplicationError(404, 'API endpoint not found')));
 
 // Catches any errors that were thrown in the middleware and sends them back as the response
-app.use((
-  err: ApplicationError,
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) => {
-  handleErrors(err, res);
-});
+app.use(handleErrors);
 
 export default app;

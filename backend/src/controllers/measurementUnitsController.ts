@@ -8,7 +8,7 @@ const indexMeasurementUnits = async (
   next: express.NextFunction,
 ) => {
   try {
-    const measurementUnits = await prisma.measurementUnit.findMany({ });
+    const measurementUnits = await prisma.measurementUnit.findMany({});
 
     return res.json({ measurementUnits });
   } catch (err) {
