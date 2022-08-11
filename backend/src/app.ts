@@ -55,6 +55,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  if (!req.body) req.body = {};
+  next();
+});
+
 app.use('/', router);
 
 // Throws a 404 error if the request did not match an endpoint in the router

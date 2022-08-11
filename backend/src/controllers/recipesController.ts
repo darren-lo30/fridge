@@ -26,11 +26,11 @@ const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, curre
   fridge.ingredients.forEach((ingredient) => {
     findManyAndConditions.push({
       AND: [{
-        id: {
-          equals: ingredient.id,
+        ingredientTypeId: {
+          equals: ingredient.ingredientTypeId,
         },
         amount: {
-          gte: ingredient.amount,
+          lte: ingredient.amount,
         },
       }],
     });
@@ -88,6 +88,9 @@ const indexRecipes = async (
     take: limit,
     skip: offset,
     cursor: cursor ? { id: cursor } : undefined,
+    include: {
+      ingredients: true,
+    },
   };
 
   let recipes;
@@ -110,6 +113,9 @@ const getRecipe = async (
   const recipe = await prisma.recipe.findUniqueOrThrow({
     where: {
       id: recipeId,
+    },
+    include: {
+      ingredients: true,
     },
   });
 
