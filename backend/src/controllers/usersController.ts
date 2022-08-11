@@ -10,25 +10,21 @@ import { parseRequest, validateRequest } from '@src/middleware/requestValidator'
 // Sign up routine for user
 const signUp = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const { body: { fullName, email, password } } = await parseRequest(signUpSchema, req);
-  try {
-    const user = await prisma.user.create({
-      data: {
-        fullName,
-        email,
-        password: await hashPassword(password),
-        fridge: {
-          create: {},
-        },
+  const user = await prisma.user.create({
+    data: {
+      fullName,
+      email,
+      password: await hashPassword(password),
+      fridge: {
+        create: {},
       },
-    });
+    },
+  });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: removedPassword, ...returnUser } = user;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password: removedPassword, ...returnUser } = user;
 
-    return res.status(201).json({ user: returnUser });
-  } catch (err) {
-    return next(ApplicationError.constructFromDbError(err));
-  }
+  return res.status(201).json({ user: returnUser });
 };
 
 // Sign in routine for user
@@ -70,20 +66,16 @@ const getUser = async (
   next: express.NextFunction,
 ) => {
   const { params: { userId } } = await parseRequest(getUserSchema, req);
-  try {
-    const user = await prisma.user.findUniqueOrThrow({
-      where: {
-        id: userId,
-      },
-    });
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+  });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...returnUser } = user;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...returnUser } = user;
 
-    return res.json({ user: returnUser });
-  } catch (err) {
-    return next(ApplicationError.constructFromDbError(err));
-  }
+  return res.json({ user: returnUser });
 };
 
 export {

@@ -1,19 +1,28 @@
 /* eslint-disable import/prefer-default-export */
 import { z } from 'zod';
 
-const createIngredientSchema = z.object({
+const createIngredientBody = z.object({
+  ingredientTypeId: z.string(),
+  amount: z.preprocess(
+    Number,
+    z.number()
+      .gte(0),
+  ),
+  measurementUnitId: z.string(),
+});
+
+const createFridgeIngredientSchema = z.object({
   params: z.object({
     fridgeId: z.string(),
   }),
-  body: z.object({
-    ingredientTypeId: z.string(),
-    amount: z.preprocess(
-      Number,
-      z.number()
-        .gte(0),
-    ),
-    measurementUnitId: z.string(),
+  body: createIngredientBody,
+});
+
+const createRecipeIngredientSchema = z.object({
+  params: z.object({
+    recipeId: z.string(),
   }),
+  body: createIngredientBody,
 });
 
 const updateIngredientSchema = z.object({
@@ -40,6 +49,7 @@ const deleteIngredientSchema = z.object({
 
 export {
   updateIngredientSchema,
-  createIngredientSchema,
+  createFridgeIngredientSchema,
+  createRecipeIngredientSchema,
   deleteIngredientSchema,
 };

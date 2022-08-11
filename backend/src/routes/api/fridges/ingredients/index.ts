@@ -1,8 +1,8 @@
 import express from 'express';
 
-import { createIngredient } from '@controllers/ingredientsController';
+import { createFridgeIngredient } from '@controllers/ingredientsController';
 
 const router = express.Router({ mergeParams: true });
-router.post('/', createIngredient);
+router.post('/', createFridgeIngredient);
 
 export default router;

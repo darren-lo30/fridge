@@ -4,7 +4,7 @@ import path from 'path';
 // Import middleware
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import { ApplicationError, handleErrors } from '@src/middleware/errorHandler';
+import { ApplicationError, convertErrors, handleErrors } from '@src/middleware/errorHandler';
 
 import router from '@routes/index';
 
@@ -59,6 +59,8 @@ app.use('/', router);
 
 // Throws a 404 error if the request did not match an endpoint in the router
 app.use((req, res, next) => next(new ApplicationError(404, 'API endpoint not found')));
+
+app.use(convertErrors);
 
 // Catches any errors that were thrown in the middleware and sends them back as the response
 app.use(handleErrors);

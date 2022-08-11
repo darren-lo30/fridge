@@ -1,8 +1,6 @@
-import { Prisma } from '@prisma/client';
-import { ApplicationError } from '@src/middleware/errorHandler';
 import { parseRequest } from '@src/middleware/requestValidator';
 import prisma from '@src/prisma';
-import paginatedIndexSchema from '@src/validators/shared/paginatedQueryValidator';
+import { indexIngredientTypesSchema } from '@src/validators/ingredientTypesValidator';
 import express from 'express';
 
 const indexIngredientTypes = async (
@@ -10,25 +8,14 @@ const indexIngredientTypes = async (
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  const findManyArgs : Prisma.IngredientTypeFindManyArgs = {};
+  const { query: { cursor, limit, offset } } = await parseRequest(indexIngredientTypesSchema, req);
 
-  const { query: { cursor, limit, offset } } = await parseRequest(paginatedIndexSchema, req);
-  if (limit) {
-    findManyArgs.take = limit;
-  }
-
-  if (offset) {
-    findManyArgs.skip = offset;
-  } else if (cursor) {
-    findManyArgs.cursor = { id: cursor };
-  }
-
-  try {
-    const ingredientTypes = await prisma.ingredientType.findMany(findManyArgs);
-    return res.json({ ingredientTypes });
-  } catch (err) {
-    return next(ApplicationError.constructFromDbError(err));
-  }
+  const ingredientTypes = await prisma.ingredientType.findMany({
+    take: limit,
+    skip: offset,
+    cursor: cursor ? { id: cursor } : undefined,
+  });
+  return res.json({ ingredientTypes });
 };
 
 export {

@@ -1,10 +1,14 @@
-import { ApplicationError } from '@src/middleware/errorHandler';
 import { parseRequest } from '@src/middleware/requestValidator';
 import prisma from '@src/prisma';
-import { createIngredientSchema, deleteIngredientSchema, updateIngredientSchema } from '@src/validators/ingredientsValidator';
+import {
+  createFridgeIngredientSchema,
+  createRecipeIngredientSchema,
+  deleteIngredientSchema,
+  updateIngredientSchema,
+} from '@src/validators/ingredientsValidator';
 import express from 'express';
 
-const createIngredient = async (
+const createFridgeIngredient = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
@@ -19,28 +23,59 @@ const createIngredient = async (
       ingredientTypeId,
       measurementUnitId,
     },
-  } = await parseRequest(createIngredientSchema, req);
+  } = await parseRequest(createFridgeIngredientSchema, req);
 
-  try {
-    const fridge = await prisma.fridge.findUniqueOrThrow({
-      where: {
-        id: fridgeId,
-      },
-    });
+  const fridge = await prisma.fridge.findUniqueOrThrow({
+    where: {
+      id: fridgeId,
+    },
+  });
 
-    const ingredient = await prisma.ingredient.create({
-      data: {
-        fridgeId: fridge.id,
-        ingredientTypeId,
-        amount,
-        measurementUnitId,
-      },
-    });
+  const ingredient = await prisma.ingredient.create({
+    data: {
+      fridgeId: fridge.id,
+      ingredientTypeId,
+      amount,
+      measurementUnitId,
+    },
+  });
 
-    return res.json({ ingredient });
-  } catch (err) {
-    return next(ApplicationError.constructFromDbError(err));
-  }
+  return res.json({ ingredient });
+};
+
+const createRecipeIngredient = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const {
+    params: {
+      recipeId,
+    },
+    body:
+    {
+      amount,
+      ingredientTypeId,
+      measurementUnitId,
+    },
+  } = await parseRequest(createRecipeIngredientSchema, req);
+
+  const recipe = await prisma.recipe.findUniqueOrThrow({
+    where: {
+      id: recipeId,
+    },
+  });
+
+  const ingredient = await prisma.ingredient.create({
+    data: {
+      recipeId: recipe.id,
+      ingredientTypeId,
+      amount,
+      measurementUnitId,
+    },
+  });
+
+  return res.json({ ingredient });
 };
 
 const updateIngredient = async (
@@ -53,46 +88,38 @@ const updateIngredient = async (
     body: { amount, measurementUnitId },
   } = await parseRequest(updateIngredientSchema, req);
 
-  try {
-    const ingredient = await prisma.ingredient.update({
-      where: {
-        id: ingredientId,
-      },
-      data: {
-        amount,
-        measurementUnitId,
-      },
-    });
+  const ingredient = await prisma.ingredient.update({
+    where: {
+      id: ingredientId,
+    },
+    data: {
+      amount,
+      measurementUnitId,
+    },
+  });
 
-    return res.status(200).json({ ingredient });
-  } catch (err) {
-    return next(ApplicationError.constructFromDbError(err));
-  }
+  return res.status(200).json({ ingredient });
 };
 
-const deleteIngredient = [
-  async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    const { params: { ingredientId } } = await parseRequest(deleteIngredientSchema, req);
+const deleteIngredient = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const { params: { ingredientId } } = await parseRequest(deleteIngredientSchema, req);
 
-    try {
-      await prisma.ingredient.delete({
-        where: {
-          id: ingredientId,
-        },
-      });
+  await prisma.ingredient.delete({
+    where: {
+      id: ingredientId,
+    },
+  });
 
-      return res.status(200).json({ message: 'Ingredient was successfully deleted' });
-    } catch (err) {
-      return next(ApplicationError.constructFromDbError(err));
-    }
-  }];
+  return res.status(200).json({ message: 'Ingredient was successfully deleted' });
+};
 
 export {
-  createIngredient,
+  createFridgeIngredient,
+  createRecipeIngredient,
   updateIngredient,
   deleteIngredient,
 };

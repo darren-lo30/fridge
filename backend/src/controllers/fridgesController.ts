@@ -1,28 +1,27 @@
+import { parseRequest } from '@src/middleware/requestValidator';
 import prisma from '@src/prisma';
+import { getUserFridgeSchema } from '@src/validators/fridgesValidator';
 import express from 'express';
-import { ApplicationError } from '@src/middleware/errorHandler';
 
 const getUserFridge = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  try {
-    const fridge = await prisma.fridge.findUniqueOrThrow({
-      where: {
-        userId: req.params.userId,
-      },
-      include: {
-        ingredients: true,
-      },
-    });
-    return res.json({ fridge });
-  } catch (err) {
-    return next(ApplicationError.constructFromDbError(err));
-  }
+  const { params: { userId } } = await parseRequest(getUserFridgeSchema, req);
+
+  const fridge = await prisma.fridge.findUniqueOrThrow({
+    where: {
+      userId,
+    },
+    include: {
+      ingredients: true,
+    },
+  });
+
+  return res.json({ fridge });
 };
 
 export {
-  // getFridge,
   getUserFridge,
 };

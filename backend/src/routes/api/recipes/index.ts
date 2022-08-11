@@ -1,7 +1,7 @@
 import express from 'express';
 
 import {
-  getRecipe, indexRecipes, createRecipe, updateRecipe,
+  getRecipe, indexRecipes, createRecipe, updateRecipe, deleteRecipe,
 } from '@controllers/recipesController';
 
 import { withRecipeOwnership } from '@src/middleware/restrictionMiddleware';
@@ -11,6 +11,7 @@ const router = express.Router({ mergeParams: true });
 
 router.post('/:recipeId', withRecipeOwnership, getRecipe);
 router.patch('/:recipeId', withRecipeOwnership, updateRecipe);
+router.delete('/:recipeId', withRecipeOwnership, deleteRecipe);
 router.post('/', createRecipe);
 router.get('/', indexRecipes);
 

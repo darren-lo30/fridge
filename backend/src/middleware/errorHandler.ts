@@ -31,7 +31,17 @@ class ApplicationError extends Error {
       );
     }
 
+    // Occurs when user attempts to find a resource that does not exist
+    // This should never occur for resources the user must have ownership of to view
+    if (dbError instanceof Prisma.NotFoundError) {
+      return new ApplicationError(
+        404,
+        dbError.message,
+      );
+    }
+
     if (dbError instanceof Prisma.PrismaClientKnownRequestError) {
+      // Occurs when a foreign key provided by the user is invalid
       if (dbError.code === 'P2003') {
         return new ApplicationError(
           400,
@@ -40,6 +50,8 @@ class ApplicationError extends Error {
         );
       }
 
+      // Occurs when a user attempts to update or delete a resource that does not exist
+      // This should never occur for resources the user must have ownership of to update or delete
       if (dbError.code === 'P2025') {
         return new ApplicationError(
           404,
@@ -48,6 +60,8 @@ class ApplicationError extends Error {
         );
       }
 
+      // Occurs when the user tries to create a resource with
+      // unique parameters that already exist in the database
       if (dbError.code === 'P2002') {
         return new ApplicationError(
           409,
@@ -77,6 +91,28 @@ class ApplicationError extends Error {
   }
 }
 
+const convertErrors = (
+  err: any,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  if (err instanceof ZodError) {
+    return next(ApplicationError.constructFromZodError(err));
+  }
+
+  if (err instanceof Prisma.PrismaClientUnknownRequestError
+     || err instanceof Prisma.PrismaClientKnownRequestError
+     || err instanceof Prisma.PrismaClientRustPanicError
+     || err instanceof Prisma.PrismaClientInitializationError
+     || err instanceof Prisma.PrismaClientValidationError
+     || err instanceof Prisma.NotFoundError) {
+    return next(ApplicationError.constructFromDbError(err));
+  }
+
+  return next(err);
+};
+
 const handleErrors = (
   err: any,
   req: express.Request,
@@ -96,5 +132,6 @@ const handleErrors = (
 };
 export {
   ApplicationError,
+  convertErrors,
   handleErrors,
 };
