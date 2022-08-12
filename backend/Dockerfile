@@ -20,6 +20,4 @@ EXPOSE 3000
 
 RUN npm run build
 
-CMD npx prisma migrate deploy
-
-CMD npm run prod
+CMD npx prisma migrate deploy && npm run prod
