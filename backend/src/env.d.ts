@@ -4,7 +4,7 @@
 namespace NodeJS {
   export interface ProjectEnv {
     NODE_ENV: 'development' | 'production';
-    PORT?: string,
+    APP_PORT?: string,
     DATABASE_URL: string;
     SESSION_SECRET: string;
     LOG_ERRORS: string;
