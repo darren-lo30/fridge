@@ -23,7 +23,6 @@ services:
     depends_on:
       - check-db-started
     build: .
-    restart: on-failure
     env_file: ./.env
     ports:
       - $NODE_LOCAL_PORT:$APP_PORT
