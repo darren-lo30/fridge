@@ -8,6 +8,7 @@ namespace NodeJS {
     DATABASE_URL: string;
     SESSION_SECRET: string;
     LOG_ERRORS: string;
+    FRONT_END_URL: string,
   }
 
   export interface ProcessEnv extends ProjectEnv {}

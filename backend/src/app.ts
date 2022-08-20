@@ -26,10 +26,11 @@ import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import cors from 'cors';
 
 import getEnvVar from '@src/utils/getEnvVar';
+import corsConfig from './config/corsConfig';
 
 const app = express();
 
-app.use(cors());
+app.use(cors(corsConfig));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
