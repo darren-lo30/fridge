@@ -34,9 +34,9 @@ model Fridge {
 }
 
 enum IngredientMeasurement {
-  discrete // defaults to number
-  volume // defaults to mL
-  weight // defaults to grams
+  discrete_cnt // defaults to number
+  volume_mL // defaults to mL
+  weight_g // defaults to grams
 }
 
 // Server generate instances of ingredients

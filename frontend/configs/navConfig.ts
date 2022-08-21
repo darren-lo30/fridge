@@ -7,7 +7,7 @@ export const authedNavLinks : NavbarProps['navLinks'] = [
   },
   {
   href: '/recipes',
-  label: 'My Recipes'
+  label: 'Recipes'
   }, 
 ];
 

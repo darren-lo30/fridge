@@ -1,6 +1,7 @@
 import RecipeAPI from '@apiLayer/RecipeAPI'
+import { ChevronDownIcon } from '@chakra-ui/icons'
 import { Flex, Box, Image, Text, Heading, Stack, ButtonGroup, LinkProps, ScaleFade, SimpleGrid} from '@chakra-ui/react'
-import { FridgeLink } from '@components/FridgeButton'
+import { FridgeButton, FridgeLink } from '@components/FridgeButton'
 import RecipePreview from '@components/RecipePreview'
 import { useUser } from '@contexts/UserProvider'
 import { Recipe } from '@fridgeTypes/Recipe'
@@ -77,11 +78,16 @@ const AuthedView = () => {
         <Heading size='lg'>
           Recipes For You
         </Heading>
-        <SimpleGrid mt={'5'} columns={2} minChildWidth='300px' overflow={'hidden'} gap={'5'}>
+        <SimpleGrid mt={'5'} pt={'5'} columns={2} minChildWidth='300px' overflow={'hidden'} gap={'5'}>
           { recipes.map((recipe) => (
             <RecipePreview bg={'white'} key={recipe.id} recipe={recipe} ></RecipePreview>
           ))}
         </SimpleGrid>
+        <Box textAlign={'center'} mt='5'>
+          <FridgeButton slideDirection='bottom'>
+            <ChevronDownIcon w='10' h='10' />
+          </FridgeButton>
+        </Box>
       </Box>
       <Box flex={'1'} p={'5'} rounded={'5'} bg={'gray.50'}>
         <Heading size='lg'>
