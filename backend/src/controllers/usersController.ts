@@ -6,6 +6,7 @@ import { hashPassword } from '@src/utils/passwordUtils';
 import passport from 'passport';
 import { User } from '@prisma/client';
 import { parseRequest, validateRequest } from '@src/middleware/requestValidator';
+import { assertIsAuthed } from '@src/utils/assertions';
 
 // Sign up routine for user
 const signUp = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -38,10 +39,12 @@ const signIn = [
   ) => passport.authenticate('local', async (err, user: User, info) => {
   // Uses passport local authentication which is based on sessions
 
-    if (err) return next(new ApplicationError(500, 'Something went wrong while signing in.'));
+    if (err) {
+      return next(new ApplicationError(500, 'Something went wrong while signing in.'));
+    }
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+      return next(new ApplicationError(401, 'Invalid credentials'));
     }
 
     // Login routine sets the session cookie for the user
@@ -78,8 +81,18 @@ const getUser = async (
   return res.json({ user: returnUser });
 };
 
+const getAuthedUser = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  assertIsAuthed(req);
+  return res.json({ user: req.user });
+};
+
 export {
   signUp,
   signIn,
   getUser,
+  getAuthedUser,
 };

@@ -17,8 +17,11 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["components/*"],
-      "@configs/*": ["configs/*"]
-      
+      "@configs/*": ["configs/*"],
+      "@contexts/*": ["contexts/*"],
+      "@fridgeTypes/*": ["types/*"],
+      "@apiLayer/*": ["apiLayer/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

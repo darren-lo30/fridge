@@ -1,26 +1,23 @@
-import { NavbarProps } from "@components/navbar";
+import { NavbarProps } from "@components/Navbar";
 
-const authedNavLinks : NavbarProps['navLinks'] = {
-  left: [{
+const authedNavLinks : NavbarProps['navLinks'] = [
+  {
     href: '/fridge',
     label: 'My Fridge'
   }, {
     href: '/shop',
     label: 'My Shop'
-  }],
-  right: [{
-    href: '/recipes',
-    label: 'My Recipes'
-  }, {
+  },
+  {
+  href: '/recipes',
+  label: 'My Recipes'
+  }, 
+  {
     href: 'account',
     label: 'My Account'
-  }]
-}
+  }
+];
 
-const nonAuthedNavLinks : NavbarProps['navLinks'] = {
-  left: [],
-  right: []
-}
-
+const nonAuthedNavLinks : NavbarProps['navLinks'] = []
 
 export { authedNavLinks, nonAuthedNavLinks }
