@@ -1,6 +1,5 @@
 import UserAPI from "@apiLayer/UserAPI";
 import { User } from "@fridgeTypes/User";
-import { GetServerSideProps } from "next";
 import React, { Dispatch, useEffect, useState } from "react";
 import { createCtx } from "./contextUtils";
 
@@ -21,8 +20,12 @@ export const UserProvider = ({ children } : React.PropsWithChildren) => {
     setLoading(true);
     
     void (async() => {
-      const response = await UserAPI.auth();
-      setUser(response.user);
+      try {
+        const response = await UserAPI.auth();
+        setUser(response.user);
+      } catch (err) {
+        setUser(null);
+      }
 
       setLoading(false);
     })();

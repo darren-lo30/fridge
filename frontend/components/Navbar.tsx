@@ -1,4 +1,4 @@
-import { Box, Link, Flex, Text, HStack, IconButton, useDisclosure, Stack, Center, useColorModeValue, LinkProps} from "@chakra-ui/react";
+import { Box, Link, Flex, Text, Menu, MenuButton, MenuItem, HStack, IconButton, useDisclosure, Stack, Center, useColorModeValue, LinkProps, Avatar, MenuList, MenuDivider} from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import appConfig from "@configs/appConfig";
 import Logo from "@components/Logo";
@@ -6,7 +6,8 @@ import { useUser } from "@contexts/UserProvider";
 import { Bounds } from "./Bounds";
 
 export type NavbarProps = {
-  navLinks: Array<{ href: string, label: string}>
+  navLinks: Array<{ href: string, label: string}>,
+  profileLinks: Array<{ href: string, label: string}>
 }
 
 const NavLink = (props: LinkProps) => (
@@ -24,7 +25,7 @@ const NavLink = (props: LinkProps) => (
   </Link>
 )
 
-const Navbar = ({ navLinks}: NavbarProps) =>{
+const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useUser();
   return (
@@ -46,18 +47,48 @@ const Navbar = ({ navLinks}: NavbarProps) =>{
           </Link>
 
           {/* Displays the links if the user is signed in */}
-          { user ? (
-            <HStack
-              as={'nav'}
-              gap={2}
-              display={{ base: 'none', md: 'flex' }}>
-              {navLinks.map((link) => (
-                <NavLink key={link.href} href={link.href}>{link.label}</NavLink>
-              ))}
+          
+          <HStack
+            as={'nav'}
+            gap={2}
+            display={{ base: 'none', md: 'flex' }}>
+            {navLinks.map((link) => (
+              <NavLink key={link.href} href={link.href}>{link.label}</NavLink>
+            ))}
 
-            </HStack>
-          ) : null }
+            {user ? (
+            <Menu
+              placement="bottom-end"
+            >   
 
+              <MenuButton
+                rounded={'full'}
+                cursor={'pointer'}
+                minW={0}>
+                <Avatar
+                  size={'sm'}
+                  name = { user.fullName}
+                />
+              </MenuButton>
+              <MenuList
+                left={0}
+              >
+                <Box px='0.8rem'>
+                  <Text>Hello <Text fontWeight={'bold'}>{user.fullName}</Text></Text>
+                </Box>
+                <MenuDivider/>
+                {profileLinks.map((link) => (
+                  <Link key={link.href} href={link.href} _hover={{textDecoration: 'none'}}>
+                    <MenuItem  >
+                      { link.label }
+                    </MenuItem>
+                  </Link>
+                ))}
+              </MenuList>
+            </Menu>
+            ) : null }
+          </HStack>
+          
           <IconButton 
             size={'md'} 
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />} 

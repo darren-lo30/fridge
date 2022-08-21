@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app'
-import { authedNavLinks } from 'configs/navConfig';
+import { authedNavLinks, nonAuthedNavLinks, profileLinks } from 'configs/navConfig';
 import { Box, ChakraProvider } from '@chakra-ui/react'
 import Navbar from '@components/Navbar';
 
@@ -9,11 +9,14 @@ import theme from '@configs/themeConfig';
 import 'configs/themeConfig';
 import { UserProvider, useUser } from '@contexts/UserProvider';
 import { Bounds } from '@components/Bounds';
-import { useEffect } from 'react';
-import UserAPI from '@apiLayer/UserAPI';
+
+const FridgeNavBar = () => {
+  const { user }= useUser();
+  return <Navbar navLinks={user ? authedNavLinks : nonAuthedNavLinks} profileLinks={profileLinks} />  
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
-
+  
   return (
     <ChakraProvider theme={theme}>
       <UserProvider>
@@ -23,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           minHeight={'100vh'}
           flexDir={'column'}
         > 
-          <Navbar navLinks={authedNavLinks} />  
+          <FridgeNavBar/>  
           <Bounds display={'flex'} flex={'1'} py={'8'}>
             <Component {...pageProps} />    
           </Bounds>

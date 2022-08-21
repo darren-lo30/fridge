@@ -6,7 +6,6 @@ import { hashPassword } from '@src/utils/passwordUtils';
 import passport from 'passport';
 import { User } from '@prisma/client';
 import { parseRequest, validateRequest } from '@src/middleware/requestValidator';
-import { assertIsAuthed } from '@src/utils/assertions';
 
 // Sign up routine for user
 const signUp = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -86,13 +85,26 @@ const getAuthedUser = async (
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  assertIsAuthed(req);
+  if (!req.user) {
+    throw new ApplicationError(401, 'User is not authenticated.');
+  }
+
   return res.json({ user: req.user });
+};
+
+const signOut = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  req.logout({ keepSessionInfo: false }, (logoutErr) => next(new ApplicationError(500, 'Something went wrong while signing out.')));
+  return res.sendStatus(200);
 };
 
 export {
   signUp,
   signIn,
+  signOut,
   getUser,
   getAuthedUser,
 };

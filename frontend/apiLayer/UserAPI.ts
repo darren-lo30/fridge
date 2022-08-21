@@ -27,6 +27,10 @@ const UserAPI = {
     return response.data;
   },
 
+  signOut: async function () {
+    await api.post('/sign-out');
+  },
+
   auth: async function () {
     const response = await api.post<ResponseWithUser>('/auth');
     return response.data;
