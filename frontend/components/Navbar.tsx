@@ -39,8 +39,8 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
             }}
           >
             <Center>
-              <Logo color={'red'} mr={2} />
-              <Text fontSize={25}>
+              <Logo mb={1} mr={1.5} h={'8'} w={'800'}/>
+              <Text fontSize={30} fontWeight='bold'>
                 { appConfig.appName }
               </Text>
             </Center>
@@ -55,7 +55,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
             {navLinks.map((link) => (
               <NavLink key={link.href} href={link.href}>{link.label}</NavLink>
             ))}
-
+ 
             {user ? (
             <Menu
               placement="bottom-end"

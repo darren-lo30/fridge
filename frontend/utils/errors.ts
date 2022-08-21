@@ -1,8 +1,7 @@
-import api from "@configs/axiosConfig";
 import axios, { AxiosError } from "axios";
 
 export const isAPIError = (error: unknown) : error is AxiosError<APIError> => {
-  return axios.isAxiosError(error) && error.response !== undefined && error.response !== null;
+  return axios.isAxiosError(error) && error.response !== undefined && error.response !== null && error.response.data !== undefined;
 }
 
 export const getAPIError = (error: AxiosError<APIError>) : APIError => {

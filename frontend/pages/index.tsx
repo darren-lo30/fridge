@@ -1,4 +1,5 @@
-import { Flex, Box, Text, Heading, Stack, Link, ButtonGroup, LinkProps} from '@chakra-ui/react'
+import { Flex, Box, Image, Text, Heading, Stack, Link, ButtonGroup, LinkProps} from '@chakra-ui/react'
+import Logo from '@components/Logo'
 import { useUser } from '@contexts/UserProvider'
 import type { NextPage } from 'next'
 
@@ -26,20 +27,30 @@ const AuthedView = () => {
 }
 
 const UnauthedView = () => (
-  
-  <Flex flex={'1'} minHeight={'100%'} justifyContent={'stretch'} alignItems={'stretch'}>
-    <Box flex={'1'} height={'100%'}>
-      <Stack px={'3'} pt={'20rem'}>
+  <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'}>
+    <Box flex={'2'} height={'100%'}>
+      <Stack pl={'3'} pr={'5rem'} pt={'20vh'}>
         <Heading
           size={'3xl'}
           mb={'3'}
+          display={'inline'}
+          lineHeight={'120%'}
         >
-          Hello World
+          Unlock the Full Potential of Your 
+          <Heading
+            size={'3xl'}
+            as='span'
+            fontWeight={'bold'}
+            color={'primary.800'}
+          >
+            {' Fridge'} 
+          </Heading>
         </Heading>
         <Text
           fontSize={'lg'}
+          pr={'25%'}
         >
-          Lorem Ipsum
+          Access your <Text as='span' color='primary.800' fontWeight={'bold'}>Fridge</Text> from anywhere. Find tailored recipes made with the ingredients in your <Text as='span' color='primary.800' fontWeight={'bold'}>Fridge</Text>.
         </Text>
         <ButtonGroup py={'4'} gap={'3'}>
           <AuthButton href={'/sign-in'}>Sign In</AuthButton>
@@ -47,9 +58,9 @@ const UnauthedView = () => (
         </ButtonGroup>
       </Stack>
     </Box>
-    <Box flex={'1'} height={'100%'} bg={'yellow'}>
+    <Box rounded='5' flex='1' height='80%' my='auto'>
+      <Image src='/landing.svg' height={'100%'} alt='Vector of fridge'/>
     </Box>
-
   </Flex>  
 )
 

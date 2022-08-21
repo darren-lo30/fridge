@@ -1,5 +1,5 @@
 import UserAPI from "@apiLayer/UserAPI";
-import { Heading, Stack } from "@chakra-ui/react"
+import { Box, Heading, Stack } from "@chakra-ui/react"
 import CenteredForm from "@components/CenteredForm";
 import FridgeButton from "@components/FridgeButton";
 import { InputWithError } from "@components/InputWithError";
@@ -86,7 +86,6 @@ const SignUp: NextPage = () => {
               required: 'Password is required.',
               minLength: {value: 5, message: 'Password must be atleast 5 characters long'}
             })}
-            
           />
 
           <Password 
@@ -98,11 +97,14 @@ const SignUp: NextPage = () => {
             })}
           />
 
-          <FridgeButton
-            type='submit'
-          >
-            Sign Up
-          </FridgeButton>
+          <Box py='5'>
+            <FridgeButton
+              width={'100%'}
+              type='submit'
+            >
+              Sign Up
+            </FridgeButton>
+          </Box>
         </Stack>
       </form>
     </CenteredForm>
