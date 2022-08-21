@@ -1,7 +1,7 @@
 import UserAPI from "@apiLayer/UserAPI";
 import { Box, Heading, Stack } from "@chakra-ui/react"
 import CenteredForm from "@components/CenteredForm";
-import FridgeButton from "@components/FridgeButton";
+import {FridgeButton} from "@components/FridgeButton";
 import { InputWithError } from "@components/InputWithError";
 import Password from "@components/Password";
 import { getAPIError, isAPIError } from "@utils/errors";

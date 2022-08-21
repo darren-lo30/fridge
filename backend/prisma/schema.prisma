@@ -75,6 +75,7 @@ model Ingredient {
 model Recipe {
   id           String       @id @default(uuid())
   title        String
+  description  String
   authorId     String
   author       User         @relation(fields: [authorId], references: [id])
   instructions String

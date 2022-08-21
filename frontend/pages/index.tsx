@@ -1,28 +1,94 @@
-import { Flex, Box, Image, Text, Heading, Stack, Link, ButtonGroup, LinkProps} from '@chakra-ui/react'
-import Logo from '@components/Logo'
+import RecipeAPI from '@apiLayer/RecipeAPI'
+import { Flex, Box, Image, Text, Heading, Stack, ButtonGroup, LinkProps, ScaleFade, SimpleGrid} from '@chakra-ui/react'
+import { FridgeLink } from '@components/FridgeButton'
+import RecipePreview from '@components/RecipePreview'
 import { useUser } from '@contexts/UserProvider'
+import { Recipe } from '@fridgeTypes/Recipe'
 import type { NextPage } from 'next'
+import { useEffect, useState } from 'react'
 
 const AuthButton = (props : LinkProps) => (
-  <Link
-    bg={'primary.main'}
-    rounded={'5'}
+  <FridgeLink
     py={'2'}
     px={'5'}
-    display={'flex'}
-    _hover={{
-      textDecoration: 'none',
-      bg: 'secondary.main'
-    }}
     fontWeight={'bold'}
     { ...props }
-  > { props.children } </Link>
+  > { props.children } </FridgeLink>
 )
 
 const AuthedView = () => {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+  const getRecipes = async () => {
+    const recipes = await RecipeAPI.getTailoredRecipes({limit: 8});
+    setRecipes([
+      {
+        author: {
+          email: 'Test@gmail.com',
+          fullName: 'Darren Lo',
+          id: '123123'
+        },
+        description: 'hello world this is a descript. Very tasty',
+        id: 'asddas',
+        ingredients: [],
+        instructions: 'asdasdsd',
+        postedDate: new Date(),
+        thumbnail: 'https://www.grouphealth.ca/wp-content/uploads/2018/05/placeholder-image-300x225.png',
+        title: 'Number 1 Pizza Recipe'
+      },
+      {
+        author: {
+          email: 'Test@gmail.com',
+          fullName: 'Darren Lo',
+          id: '123123'
+        },
+        description: 'hello world this is a descript. Very tasty',
+        id: 'asddas',
+        ingredients: [],
+        instructions: 'asdasdsd',
+        postedDate: new Date(),
+        thumbnail: 'https://www.grouphealth.ca/wp-content/uploads/2018/05/placeholder-image-300x225.png',
+        title: 'Number 1 Pizza Recipe'
+      },
+      {
+        author: {
+          email: 'Test@gmail.com',
+          fullName: 'Darren Lo',
+          id: '123123'
+        },
+        description: 'hello world this is a descript. Very tasty. Stop showing this overflowing line',
+        id: 'asddas',
+        ingredients: [],
+        instructions: 'asdasdsd',
+        postedDate: new Date(),
+        thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
+        title: 'Number 1 Pizza Recipe',
+      }
+    ]);
+  }
+
+  useEffect(() => {
+    void getRecipes();
+  }, []);
+
   return (
-    <>
-    </>
+    <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'} gap={'3rem'}>
+      <Box flex={'2'} p={'5'} rounded={'5'}>
+        <Heading size='lg'>
+          Recipes For You
+        </Heading>
+        <SimpleGrid mt={'5'} columns={2} minChildWidth='300px' overflow={'hidden'} gap={'5'}>
+          { recipes.map((recipe) => (
+            <RecipePreview bg={'white'} key={recipe.id} recipe={recipe} ></RecipePreview>
+          ))}
+        </SimpleGrid>
+      </Box>
+      <Box flex={'1'} p={'5'} rounded={'5'} bg={'gray.50'}>
+        <Heading size='lg'>
+          Your Fridge
+        </Heading>
+      </Box>
+    </Flex>
   );
 }
 
@@ -58,9 +124,12 @@ const UnauthedView = () => (
         </ButtonGroup>
       </Stack>
     </Box>
-    <Box rounded='5' flex='1' height='80%' my='auto'>
-      <Image src='/landing.svg' height={'100%'} alt='Vector of fridge'/>
-    </Box>
+    
+    <ScaleFade initialScale={0.5} in={true}>
+      <Box rounded='5' flex='1' height='80%' my='auto'>
+        <Image src='/landing.svg' height={'100%'} alt='Vector of fridge'/>
+      </Box>
+    </ScaleFade>
   </Flex>  
 )
 

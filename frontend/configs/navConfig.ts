@@ -4,9 +4,6 @@ export const authedNavLinks : NavbarProps['navLinks'] = [
   {
     href: '/fridge',
     label: 'My Fridge'
-  }, {
-    href: '/shop',
-    label: 'My Shop'
   },
   {
   href: '/recipes',
