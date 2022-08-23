@@ -1,5 +1,7 @@
+import { Prisma } from '@prisma/client';
 import { parseRequest } from '@src/middleware/requestValidator';
 import prisma from '@src/prisma';
+import { assertIsAuthed } from '@src/utils/assertions';
 import { indexIngredientTypesSchema } from '@src/validators/ingredientTypesValidator';
 import express from 'express';
 
@@ -8,13 +10,54 @@ const indexIngredientTypes = async (
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  const { query: { cursor, limit, offset } } = await parseRequest(indexIngredientTypesSchema, req);
+  assertIsAuthed(req);
+  const {
+    query: {
+      cursor, limit, offset, show, search,
+    },
+  } = await parseRequest(indexIngredientTypesSchema, req);
 
-  const ingredientTypes = await prisma.ingredientType.findMany({
+  const indexArgs : Prisma.IngredientTypeFindManyArgs = {
     take: limit,
     skip: offset,
     cursor: cursor ? { id: cursor } : undefined,
-  });
+  };
+
+  if (show === 'tailored') {
+    const userIngredients = await prisma.ingredient.findMany({
+      where: {
+        fridge: {
+          userId: {
+            equals: req.user.id,
+          },
+        },
+      },
+      select: {
+        ingredientTypeId: true,
+      },
+    });
+
+    const existingIngredientTypes = userIngredients.map((i) => i.ingredientTypeId);
+
+    indexArgs.where = {
+      ...indexArgs.where,
+      id: {
+        notIn: existingIngredientTypes,
+      },
+    };
+  }
+
+  if (search) {
+    indexArgs.where = {
+      ...indexArgs.where,
+      name: {
+        contains: search,
+      },
+    };
+  }
+
+  const ingredientTypes = await prisma.ingredientType.findMany(indexArgs);
+
   return res.json({ ingredientTypes });
 };
 

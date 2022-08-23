@@ -132,7 +132,9 @@ const createRecipe = async (
 ) => {
   assertIsAuthed(req);
   const {
-    body: { instructions, title, description },
+    body: {
+      instructions, title, description, thumbnail,
+    },
   } = await parseRequest(createRecipeSchema, req);
 
   const recipe = await prisma.recipe.create({
@@ -140,6 +142,7 @@ const createRecipe = async (
       authorId: req.user.id,
       description,
       instructions,
+      thumbnail,
       title,
     },
   });

@@ -24,46 +24,57 @@ async function main() {
   const ingredientTypeData: Prisma.IngredientTypeCreateInput[] = [
     {
       name: 'chicken',
+      imageUrl: '',
       measurementType: 'weight_g',
     },
     {
       name: 'beef',
+      imageUrl: '',
       measurementType: 'weight_g',
     },
     {
       name: 'strawberry',
+      imageUrl: '',
       measurementType: 'discrete_cnt',
     },
     {
       name: 'milk',
+      imageUrl: '',
       measurementType: 'volume_mL',
     },
     {
       name: 'radish',
+      imageUrl: '',
       measurementType: 'weight_g',
     },
     {
       name: 'paprika',
+      imageUrl: '',
       measurementType: 'volume_mL',
     },
     {
       name: 'soy sauce',
+      imageUrl: '',
       measurementType: 'volume_mL',
     },
     {
       name: 'apple',
+      imageUrl: '',
       measurementType: 'discrete_cnt',
     },
     {
       name: 'fish',
+      imageUrl: '',
       measurementType: 'weight_g',
     },
     {
       name: 'panko',
+      imageUrl: '',
       measurementType: 'volume_mL',
     },
     {
       name: 'egg',
+      imageUrl: '',
       measurementType: 'discrete_cnt',
     },
   ];
@@ -157,42 +168,49 @@ async function main() {
   const recipes : Prisma.RecipeUncheckedCreateInput[] = [
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',
     },
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',
     },
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',
     },
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',
     },
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',
     },
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',
     },
     {
       authorId: userId,
+      thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
       description: 'This is a recipe',
       instructions: 'These are the instructions',
       title: 'Title 123',

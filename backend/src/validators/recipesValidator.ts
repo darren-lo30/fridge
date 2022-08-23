@@ -10,6 +10,7 @@ const getRecipeSchema = z.object({
 const createRecipeSchema = z.object({
   body: z.object({
     title: z.string().min(1),
+    thumbnail: z.string().min(1),
     description: z.string(),
     instructions: z.string().min(1),
   }),

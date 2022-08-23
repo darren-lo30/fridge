@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -43,9 +44,12 @@ enum IngredientMeasurement {
 model IngredientType {
   id                  String       @id @default(uuid())
   name                String       @unique
+  imageUrl            String
   ingredientInstances Ingredient[]
 
   measurementType IngredientMeasurement
+
+  @@fulltext([name])
 }
 
 model MeasurementUnit {
@@ -75,6 +79,7 @@ model Ingredient {
 model Recipe {
   id           String       @id @default(uuid())
   title        String
+  thumbnail    String
   description  String
   authorId     String
   author       User         @relation(fields: [authorId], references: [id])
