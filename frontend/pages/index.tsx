@@ -1,12 +1,10 @@
-import RecipeAPI from '@apiLayer/RecipeAPI'
-import { ChevronDownIcon } from '@chakra-ui/icons'
-import { Flex, Box, Image, Text, Heading, Stack, ButtonGroup, LinkProps, ScaleFade, SimpleGrid} from '@chakra-ui/react'
-import { FridgeButton, FridgeLink } from '@components/FridgeButton'
-import RecipePreview from '@components/RecipePreview'
-import { useUser } from '@contexts/UserProvider'
-import { Recipe } from '@fridgeTypes/Recipe'
+import { Flex, Box, Image, Text, Heading, Stack, ButtonGroup, LinkProps} from '@chakra-ui/react'
+import { FridgeLink } from '@components/FridgeButton'
+import IngredientList from '@components/IngredientList'
+import RecipesList from '@components/RecipesList'
+import { StoredUser, useUser } from '@contexts/UserProvider'
 import type { NextPage } from 'next'
-import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion';
 
 const AuthButton = (props : LinkProps) => (
   <FridgeLink
@@ -17,90 +15,35 @@ const AuthButton = (props : LinkProps) => (
   > { props.children } </FridgeLink>
 )
 
-const AuthedView = () => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-
-  const getRecipes = async () => {
-    const recipes = await RecipeAPI.getTailoredRecipes({limit: 8});
-    setRecipes([
-      {
-        author: {
-          email: 'Test@gmail.com',
-          fullName: 'Darren Lo',
-          id: '123123'
-        },
-        description: 'hello world this is a descript. Very tasty',
-        id: 'asddas',
-        ingredients: [],
-        instructions: 'asdasdsd',
-        postedDate: new Date(),
-        thumbnail: 'https://www.grouphealth.ca/wp-content/uploads/2018/05/placeholder-image-300x225.png',
-        title: 'Number 1 Pizza Recipe'
-      },
-      {
-        author: {
-          email: 'Test@gmail.com',
-          fullName: 'Darren Lo',
-          id: '123123'
-        },
-        description: 'hello world this is a descript. Very tasty',
-        id: 'asddas',
-        ingredients: [],
-        instructions: 'asdasdsd',
-        postedDate: new Date(),
-        thumbnail: 'https://www.grouphealth.ca/wp-content/uploads/2018/05/placeholder-image-300x225.png',
-        title: 'Number 1 Pizza Recipe'
-      },
-      {
-        author: {
-          email: 'Test@gmail.com',
-          fullName: 'Darren Lo',
-          id: '123123'
-        },
-        description: 'hello world this is a descript. Very tasty. Stop showing this overflowing line',
-        id: 'asddas',
-        ingredients: [],
-        instructions: 'asdasdsd',
-        postedDate: new Date(),
-        thumbnail: 'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Pizza-from-Scratch_EXPS_FT20_8621_F_0505_1_home.jpg',
-        title: 'Number 1 Pizza Recipe',
-      }
-    ]);
-  }
-
-  useEffect(() => {
-    void getRecipes();
-  }, []);
-
+const AuthedView = ({ user } : { user: StoredUser }) => {
   return (
     <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'} gap={'3rem'}>
       <Box flex={'2'} p={'5'} rounded={'5'}>
         <Heading size='lg'>
           Recipes For You
         </Heading>
-        <SimpleGrid mt={'5'} pt={'5'} columns={2} minChildWidth='300px' overflow={'hidden'} gap={'5'}>
-          { recipes.map((recipe) => (
-            <RecipePreview bg={'white'} key={recipe.id} recipe={recipe} ></RecipePreview>
-          ))}
-        </SimpleGrid>
-        <Box textAlign={'center'} mt='5'>
-          <FridgeButton slideDirection='bottom'>
-            <ChevronDownIcon w='10' h='10' />
-          </FridgeButton>
-        </Box>
+        <RecipesList />
       </Box>
-      <Box flex={'1'} p={'5'} rounded={'5'} bg={'gray.50'}>
+      
+      <Flex flexDir='column' flex={'1'} p={'5'} rounded={'5'} height='80%' maxHeight='600px' bg={'gray.50'}>
         <Heading size='lg'>
           Your Fridge
         </Heading>
-      </Box>
+          <Box my='5' flex='1' overflow='hidden'>
+            <IngredientList fridgeId={user.fridgeId} />
+          </Box>
+      </Flex>
     </Flex>
   );
 }
 
 const UnauthedView = () => (
-  <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'}>
-    <Box flex={'2'} height={'100%'}>
+  <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'} overflow='hidden' >
+    <Box as={motion.div} flex={'2'} height={'100%'}
+      initial={{x: '-100vw', opacity: 1, scale: 1}}
+      animate={{x: 0, opacity: 1, scale: 1}} 
+      transition='0.5s ease-out'
+    >
       <Stack pl={'3'} pr={'5rem'} pt={'20vh'}>
         <Heading
           size={'3xl'}
@@ -130,12 +73,15 @@ const UnauthedView = () => (
         </ButtonGroup>
       </Stack>
     </Box>
-    
-    <ScaleFade initialScale={0.5} in={true}>
-      <Box rounded='5' flex='1' height='80%' my='auto'>
-        <Image src='/landing.svg' height={'100%'} alt='Vector of fridge'/>
-      </Box>
-    </ScaleFade>
+    <Box 
+      rounded='5' flex='1' height='80%' my='auto'
+      as={motion.div} 
+      initial={{y: '100vh', opacity: 1, scale: 1}}
+      animate={{y: 0, opacity: 1, scale: 1}} 
+      transition='0.5s ease-out'
+    >
+      <Image src='/landing.svg' height={'100%'} alt='Vector of fridge'/>
+    </Box>
   </Flex>  
 )
 
@@ -143,7 +89,7 @@ const Home: NextPage = () => {
   const { user } = useUser();
 
   if(user) {
-    return (<AuthedView />);
+    return (<AuthedView user={user}/>);
   } else {
     return (<UnauthedView />);
   }

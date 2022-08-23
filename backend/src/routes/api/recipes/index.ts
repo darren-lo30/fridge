@@ -9,7 +9,7 @@ import ingredientsRouter from './ingredients';
 
 const router = express.Router({ mergeParams: true });
 
-router.post('/:recipeId', withRecipeOwnership, getRecipe);
+router.get('/:recipeId', withRecipeOwnership, getRecipe);
 router.patch('/:recipeId', withRecipeOwnership, updateRecipe);
 router.delete('/:recipeId', withRecipeOwnership, deleteRecipe);
 router.post('/', createRecipe);

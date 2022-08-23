@@ -1,24 +1,25 @@
 import api from "@configs/axiosConfig";
-import { ResponseWithRecipes } from "@fridgeTypes/Recipe";
+import { PaginationParams } from "@fridgeTypes/API";
+import { ResponseWithRecipes, ResponseWithRecipe } from "@fridgeTypes/Recipe";
+import { AxiosRequestConfig } from "axios";
 
 const RecipeAPI = {
-  getTailoredRecipes: async function (options : {limit?: number, cursor?: string, offset?: number}) {    
+  indexTailoredRecipes: async function (options : PaginationParams) {    
     options.limit = options.limit || 10;
     
-    const response = await api.get<ResponseWithRecipes>(
-      `/recipes?
-        show=tailored
-        &limit=${options.limit}
-        &${options.cursor ? `cursor=${options.cursor}` : ''}
-        &${options.offset ? `offset=${options.offset}`: ''}
-      `);
+    const response = await api.get<ResponseWithRecipes>('/recipes', { params : {...options, show: 'tailored'}});
     return response.data.recipes;
   },
 
-  getAllRecipes: async function () {
+  indexAllRecipes: async function () {
     const response = await api.get<ResponseWithRecipes>(`/recipes?show=all`,);
     return response.data.recipes;
   },
+
+  showRecipe: async function (recipeId: string, axiosConfig: AxiosRequestConfig ) {
+    const response = await api.get<ResponseWithRecipe>(`/recipes/${recipeId}`, axiosConfig);
+    return response.data.recipe;
+  }
 }
 
 export default RecipeAPI;

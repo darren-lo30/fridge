@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { z } from 'zod';
+import pagionationSchema from './shared/paginationSchema';
 
 const createIngredientBody = z.object({
   ingredientTypeId: z.string(),
@@ -9,6 +10,13 @@ const createIngredientBody = z.object({
       .gte(0),
   ),
   measurementUnitId: z.string(),
+});
+
+const indexFridgeIngredientsSchema = z.object({
+  query: pagionationSchema,
+  params: z.object({
+    fridgeId: z.string(),
+  }),
 });
 
 const createFridgeIngredientSchema = z.object({
@@ -52,4 +60,5 @@ export {
   createFridgeIngredientSchema,
   createRecipeIngredientSchema,
   deleteIngredientSchema,
+  indexFridgeIngredientsSchema,
 };

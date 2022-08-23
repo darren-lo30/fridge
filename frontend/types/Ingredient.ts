@@ -1,14 +1,16 @@
-import IngredientType from "./IngredientType"
+import {IngredientType} from "./IngredientType"
 
-interface Ingredient {
+export interface Ingredient {
   id: string,
   ingredientType: IngredientType;
   amount: number,
   displayAmount: number
 }
 
-export default Ingredient;
 
+export interface RepsonseWithIngredients {
+  ingredients: Ingredient[]
+}
 // id                String          @id @default(uuid())
 // ingredientTypeId  String
 // ingredientType    IngredientType  @relation(fields: [ingredientTypeId], references: [id])

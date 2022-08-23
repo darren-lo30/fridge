@@ -1,7 +1,8 @@
 import type { AppProps } from 'next/app'
 import { authedNavLinks, nonAuthedNavLinks, profileLinks } from 'configs/navConfig';
-import { Box, ChakraProvider } from '@chakra-ui/react'
+import { Box, ChakraProvider, Heading, Text } from '@chakra-ui/react'
 import Navbar from '@components/Navbar';
+import {ErrorBoundary} from 'react-error-boundary'
 
 import '@fontsource/inter';
 import theme from '@configs/themeConfig';
@@ -15,7 +16,16 @@ const FridgeNavBar = () => {
   return <Navbar navLinks={user ? authedNavLinks : nonAuthedNavLinks} profileLinks={profileLinks} />  
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+const ErrorFallback = ({ error} : {error: Error }) => {
+  return (
+    <Box my='auto'>
+      <Heading>Something went wrong...</Heading>
+      <Text>{ error.message }</Text>
+    </Box>
+  )
+}
+
+const MyApp = ({ Component, pageProps }: AppProps) => {
   
   return (
     <ChakraProvider theme={theme}>
@@ -28,7 +38,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         > 
           <FridgeNavBar/>  
           <Bounds display={'flex'} flex={'1'} py={'8'}>
-            <Component {...pageProps} />    
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Component {...pageProps} />    
+            </ErrorBoundary>
           </Bounds>
         </Box>
       </UserProvider>

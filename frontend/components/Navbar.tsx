@@ -74,7 +74,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
                 left={0}
               >
                 <Box px='0.8rem'>
-                  <Text>Hello <Text fontWeight={'bold'}>{user.fullName}</Text></Text>
+                  <Text>Hello <Text as='span' fontWeight={'bold'}>{user.fullName}</Text></Text>
                 </Box>
                 <MenuDivider/>
                 {profileLinks.map((link) => (

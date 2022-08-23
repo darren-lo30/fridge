@@ -4,9 +4,34 @@ import {
   createFridgeIngredientSchema,
   createRecipeIngredientSchema,
   deleteIngredientSchema,
+  indexFridgeIngredientsSchema,
   updateIngredientSchema,
 } from '@src/validators/ingredientsValidator';
 import express from 'express';
+
+const indexFridgeIngredients = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const {
+    params: { fridgeId },
+    query: { cursor, limit, offset },
+  } = await parseRequest(indexFridgeIngredientsSchema, req);
+  const ingredients = await prisma.ingredient.findMany({
+    where: {
+      fridgeId,
+    },
+    take: limit,
+    skip: offset,
+    cursor: cursor ? { id: cursor } : undefined,
+    include: {
+      ingredientType: true,
+    },
+  });
+
+  return res.json({ ingredients });
+};
 
 const createFridgeIngredient = async (
   req: express.Request,
@@ -122,4 +147,5 @@ export {
   createRecipeIngredient,
   updateIngredient,
   deleteIngredient,
+  indexFridgeIngredients,
 };

@@ -3,9 +3,9 @@ import { ResponseWithUser } from '@fridgeTypes/User';
 
 
 const UserAPI = {
-  get: async function (id : string) {
+  show: async function (id : string) {
     const response = await api.get<ResponseWithUser>(`/users/${id}`);
-    return response.data;
+    return response.data.user;
   },
 
   signIn: async function (email: string, password: string) {      
@@ -13,7 +13,7 @@ const UserAPI = {
       email,
       password
     });
-    return response.data;
+    return response.data.user;
 
   },
 
@@ -24,7 +24,7 @@ const UserAPI = {
       password,
     });
 
-    return response.data;
+    return response.data.user;
   },
 
   signOut: async function () {
@@ -33,7 +33,7 @@ const UserAPI = {
 
   auth: async function () {
     const response = await api.post<ResponseWithUser>('/auth');
-    return response.data;
+    return response.data.user;
   }
 };
 

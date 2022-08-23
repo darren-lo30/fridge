@@ -11,11 +11,10 @@ export interface Recipe {
   ingredients: Array<object>
 }
 
+export interface ResponseWithRecipe {
+  recipe: Recipe
+}
 
 export interface ResponseWithRecipes {
   recipes: Recipe[],
-}
-
-export interface ResposneWithRecipe {
-  recipe: Recipe
 }

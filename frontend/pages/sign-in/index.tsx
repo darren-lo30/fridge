@@ -34,11 +34,9 @@ const SignIn: NextPage = () => {
   const onSubmit = async (data: SignInForm) => {
     const { email, password} = data;
     try {
-      const response = await UserAPI.signIn(email, password);
-      
-      setUser(response.user);
-      
-      await router.push('/');
+      const user = await UserAPI.signIn(email, password);
+      await setUser(user);
+      await router.push('/', );
 
       reset();
     } catch (error) {

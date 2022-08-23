@@ -45,6 +45,9 @@ const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, curre
         },
       },
     },
+    include: {
+      author: true,
+    },
   });
 
   return recipes;
@@ -128,11 +131,14 @@ const createRecipe = async (
   next: express.NextFunction,
 ) => {
   assertIsAuthed(req);
-  const { body: { instructions, title } } = await parseRequest(createRecipeSchema, req);
+  const {
+    body: { instructions, title, description },
+  } = await parseRequest(createRecipeSchema, req);
 
   const recipe = await prisma.recipe.create({
     data: {
       authorId: req.user.id,
+      description,
       instructions,
       title,
     },

@@ -10,6 +10,7 @@ const getRecipeSchema = z.object({
 const createRecipeSchema = z.object({
   body: z.object({
     title: z.string().min(1),
+    description: z.string(),
     instructions: z.string().min(1),
   }),
 });
@@ -20,6 +21,7 @@ const updateRecipeSchema = z.object({
   }),
   body: z.object({
     title: z.string(),
+    description: z.string(),
     instructions: z.string(),
   }).partial(),
 });

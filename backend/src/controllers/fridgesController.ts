@@ -14,9 +14,6 @@ const getUserFridge = async (
     where: {
       userId,
     },
-    include: {
-      ingredients: true,
-    },
   });
 
   return res.json({ fridge });
