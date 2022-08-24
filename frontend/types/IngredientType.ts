@@ -1,6 +1,11 @@
+import { MeasurementType } from "./MeasurementUnit";
+
 export interface IngredientType {
   id: string,
   name: string,
-  measurementType: 'discrete_cnt' | 'volume_mL' | 'weight_g',
+  measurementType: MeasurementType,
 }
 
+export interface ResponseWithIngredientTypes {
+  ingredientTypes: IngredientType[],
+}

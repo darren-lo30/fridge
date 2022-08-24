@@ -7,6 +7,9 @@ export interface Ingredient {
   displayAmount: number
 }
 
+export interface ResponseWithIngredient {
+  ingredient: Ingredient,
+}
 
 export interface RepsonseWithIngredients {
   ingredients: Ingredient[]

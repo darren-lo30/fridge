@@ -1,5 +1,5 @@
-import FridgeAPI from "@apiLayer/FridgeAPI";
-import UserAPI from "@apiLayer/UserAPI";
+import FridgeAPI from "src/apiLayer/FridgeAPI";
+import UserAPI from "src/apiLayer/UserAPI";
 import { User } from "@fridgeTypes/User";
 import React, { useEffect, useState } from "react";
 import { createCtx } from "./contextUtils";
@@ -8,7 +8,7 @@ export interface StoredUser extends User { fridgeId: string }
 
 interface UserContextState {
   user: StoredUser | null,
-  setUser: (user: User) => Promise<void>
+  setUser: (user: User | null) => Promise<void>
 }
 
 

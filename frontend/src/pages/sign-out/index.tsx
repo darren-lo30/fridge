@@ -1,4 +1,4 @@
-import UserAPI from "@apiLayer/UserAPI";
+import UserAPI from "src/apiLayer/UserAPI";
 import { useUser } from "@contexts/UserProvider";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -11,7 +11,7 @@ const SignOut: NextPage = () => {
   useEffect(() => {
     async function signOut () {
       await UserAPI.signOut();
-      setUser(null);
+      await setUser(null);
       await router.push('/');
     }
 

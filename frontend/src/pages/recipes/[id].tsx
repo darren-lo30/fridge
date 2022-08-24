@@ -1,5 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import RecipeAPI from "@apiLayer/RecipeAPI";
+import RecipeAPI from "src/apiLayer/RecipeAPI";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { Recipe } from "@fridgeTypes/Recipe";
 

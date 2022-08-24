@@ -38,7 +38,7 @@ const sharedStyles : Partial<ButtonProps & LinkProps> = {
   px:'3',
 }
 
-export const FridgeButton = (props: ButtonProps & {slideDirection?: Direction}) => {
+export const FridgeButton = (props: ButtonProps & {slidedirection?: Direction}) => {
   const [primary, secondary] = useToken(
     'colors',
     ['primary.main', 'secondary.main']
@@ -46,9 +46,8 @@ export const FridgeButton = (props: ButtonProps & {slideDirection?: Direction}) 
 
   return (
   <Button
-    { ...createAnimationProps(primary, secondary, props.slideDirection || 'right' )}
+    { ...createAnimationProps(primary, secondary, props.slidedirection || 'right' )}
     { ...sharedStyles }
-    
     { ...props }
   >
   {props.children}
@@ -56,14 +55,14 @@ export const FridgeButton = (props: ButtonProps & {slideDirection?: Direction}) 
   );
 }
 
-export const FridgeLink = (props: LinkProps & {slideDirection?: Direction}) => {
+export const FridgeLink = (props: LinkProps & {slidedirection?: Direction}) => {
   const [primary, secondary] = useToken(
     'colors',
     ['primary.main', 'secondary.main']
   )
   return (
     <Link
-      {...createAnimationProps(primary, secondary, props.slideDirection || 'right')}
+      {...createAnimationProps(primary, secondary, props.slidedirection || 'right')}
       { ...sharedStyles }
       { ...props }
     >

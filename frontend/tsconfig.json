@@ -16,14 +16,16 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["components/*"],
-      "@configs/*": ["configs/*"],
-      "@contexts/*": ["contexts/*"],
+      "@src/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@configs/*": ["src/configs/*"],
+      "@contexts/*": ["src/contexts/*"],
       "@fridgeTypes/*": ["types/*"],
-      "@apiLayer/*": ["apiLayer/*"],
-      "@utils/*": ["utils/*"]
+      "@apiLayer/*": ["src/apiLayer/*"],
+      "@utils/*": ["src/utils/*"],
+      "@reducers/*": ["src/reducers/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/account/index.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/account/index.tsx"],
   "exclude": ["node_modules"]
 }

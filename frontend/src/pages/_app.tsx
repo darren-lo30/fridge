@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app'
-import { authedNavLinks, nonAuthedNavLinks, profileLinks } from 'configs/navConfig';
+import { authedNavLinks, nonAuthedNavLinks, profileLinks } from '@configs/navConfig';
 import { Box, ChakraProvider, Heading, Text } from '@chakra-ui/react'
 import Navbar from '@components/Navbar';
 import {ErrorBoundary} from 'react-error-boundary'
@@ -7,9 +7,11 @@ import {ErrorBoundary} from 'react-error-boundary'
 import '@fontsource/inter';
 import theme from '@configs/themeConfig';
 
-import 'configs/themeConfig';
+import '@configs/themeConfig';
 import { UserProvider, useUser } from '@contexts/UserProvider';
 import { Bounds } from '@components/Bounds';
+import { Provider } from 'react-redux';
+import { store } from '@src/store';
 
 const FridgeNavBar = () => {
   const { user }= useUser();
@@ -28,23 +30,25 @@ const ErrorFallback = ({ error} : {error: Error }) => {
 const MyApp = ({ Component, pageProps }: AppProps) => {
   
   return (
-    <ChakraProvider theme={theme}>
-      <UserProvider>
-        <Box 
-          display={'flex'} 
-          bg={'background'} 
-          minHeight={'100vh'}
-          flexDir={'column'}
-        > 
-          <FridgeNavBar/>  
-          <Bounds display={'flex'} flex={'1'} py={'8'}>
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Component {...pageProps} />    
-            </ErrorBoundary>
-          </Bounds>
-        </Box>
-      </UserProvider>
-    </ChakraProvider>
+    <Provider store={store}>
+      <ChakraProvider theme={theme}>
+        <UserProvider>
+          <Box 
+            display={'flex'} 
+            bg={'background'} 
+            minHeight={'100vh'}
+            flexDir={'column'}
+          > 
+            <FridgeNavBar/>  
+            <Bounds display={'flex'} flex={'1'} py={'8'}>
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <Component {...pageProps} />    
+              </ErrorBoundary>
+            </Bounds>
+          </Box>
+        </UserProvider>
+      </ChakraProvider>
+    </Provider>
   );
 }
 

@@ -63,6 +63,9 @@ const createFridgeIngredient = async (
       amount,
       measurementUnitId,
     },
+    include: {
+      ingredientType: true,
+    },
   });
 
   return res.json({ ingredient });

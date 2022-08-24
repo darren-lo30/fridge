@@ -1,4 +1,4 @@
-import RecipeAPI from "@apiLayer/RecipeAPI";
+import RecipeAPI from "src/apiLayer/RecipeAPI";
 import { Box, Heading,Flex, Text, Image, BoxProps, SimpleGrid } from "@chakra-ui/react"
 import { Recipe } from "@fridgeTypes/Recipe";
 import { AnimatePresence, motion } from 'framer-motion'
@@ -63,7 +63,7 @@ const RecipesList = () => {
 
 
   return (
-    <Box >
+    <Box>
       <InfiniteScroll style={{ overflow: 'hidden'}} next={getRecipes} loader={<FridgeSpinner containerProps={{py: 7}} />} dataLength={recipes.length} hasMore={hasMore}>
         <SimpleGrid mt={'5'} pt={'5'} columns={2} minChildWidth='300px' gap={'5'} overflow={'hidden'}>
             { recipes.map((recipe) => (

@@ -1,12 +1,12 @@
-import UserAPI from "@apiLayer/UserAPI";
+import UserAPI from "src/apiLayer/UserAPI";
 import { Box, Heading, Stack } from "@chakra-ui/react"
 import CenteredForm from "@components/CenteredForm";
 import {FridgeButton} from "@components/FridgeButton";
 import { InputWithError } from "@components/InputWithError";
 import Password from "@components/Password";
-import { getAPIError, isAPIError } from "@utils/errors";
+import { getAPIError, isAPIError } from "src/utils/errors";
 import { NextPage } from "next"
-import {useForm} from 'react-hook-form';
+import {  useForm } from 'src/utils/forms';
 import { useRouter } from "next/router";
 
 
