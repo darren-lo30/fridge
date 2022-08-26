@@ -15,10 +15,6 @@ type SignInForm = {
   password: string
 }
 
-type FormError = {
-  formError: string,
-}
-
 const SignIn: NextPage = () => {
   const { setUser } = useUser();
   const {
@@ -27,7 +23,7 @@ const SignIn: NextPage = () => {
     setError,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<SignInForm>();
 
   const router = useRouter();
 

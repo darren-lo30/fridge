@@ -1,6 +1,6 @@
 import IngredientAPI from "src/apiLayer/IngredientAPI";
 import IngredientTypeAPI from "src/apiLayer/IngredientTypeAPI";
-import { Box, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, InputGroup, InputRightAddon, Select, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, InputGroup, InputRightAddon, Select, SimpleGrid } from "@chakra-ui/react";
 import { FridgeButton } from "@components/FridgeButton";
 import FridgeDisplay from "@src/components/FridgeDisplay";
 import FridgeScrollbar from "@components/FridgeScrollbar";
@@ -17,22 +17,21 @@ import { useDispatch } from "react-redux";
 import { addNewIngredient } from "@src/reducers/ingredientsReducer";
 import IngredientTypeCard from "@components/IngredientTypeCard";
 import MeasurementUnitAPI from "@src/apiLayer/MeasurementUnitAPI";
-import { MeasurementUnit } from "@fridgeTypes/MeasurementUnit";
 
 
 
 interface AddIngredientFormProps {
-  ingredientType: IngredientType | null,
+  ingredientType: IngredientType,
   addIngredient: (ingredient: Ingredient) => void,
-  measurementUnits: MeasurementUnit[],
+  measurementUnitOptions: string[],
 }
 
 interface AddIngredientFormData {
   amount: number,
-  measurementUnitId: string,
+  measurementUnits: string,
 }
 
-const AddIngredientForm = ({ ingredientType, addIngredient, measurementUnits }: AddIngredientFormProps) => {
+const AddIngredientForm = ({ ingredientType, addIngredient, measurementUnitOptions }: AddIngredientFormProps) => {
   const {
     handleSubmit,
     register,
@@ -43,25 +42,19 @@ const AddIngredientForm = ({ ingredientType, addIngredient, measurementUnits }: 
   if(!user) throw new Error('Must log in');
 
   const [ selectedUnits, setSelectedUnits ] = useState('');
-  const measurementUnitOptions = measurementUnits.filter((measurementUnit) => measurementUnit.measurementType === ingredientType?.measurementType);
-  
   useEffect(() => {
-    setSelectedUnits(measurementUnitOptions[0]?.unitName || '');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ingredientType, measurementUnits]);
+    setSelectedUnits(measurementUnitOptions[0] || '');
 
-  if(ingredientType === null) {
-    return (
-      <Box>
-        <Heading size='md'>No ingredient is currently selected...</Heading>
-      </Box>
-    )
-  }
+    return () => {
+      reset();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ingredientType]);
 
   const onSubmit = async (data: AddIngredientFormData) => {
-    const { amount, measurementUnitId } = data; 
+    const { amount, measurementUnits } = data; 
     try {
-      const ingredient = await IngredientAPI.createIngredient(user.fridgeId, ingredientType.id, amount, measurementUnitId );
+      const ingredient = await IngredientAPI.createIngredient(user.fridgeId, ingredientType.id, amount, measurementUnits );
       addIngredient(ingredient);
       reset();
     } catch (e) {
@@ -81,16 +74,16 @@ const AddIngredientForm = ({ ingredientType, addIngredient, measurementUnits }: 
               <FormLabel>Units</FormLabel>
               <Select 
                 isRequired={true}
-                {...register('measurementUnitId', {
+                {...register('measurementUnits', {
                   onChange(event: React.FormEvent<HTMLInputElement>) {
-                    setSelectedUnits(measurementUnits.find((measurementUnit) => measurementUnit.id === event.currentTarget.value)?.unitName || '')
+                    setSelectedUnits(event.currentTarget.value)
                   },
                 })
                 }
               >
                 {
                   measurementUnitOptions.map((measurementUnit) => (
-                    <option key={measurementUnit.id} value={measurementUnit.id}>{ measurementUnit.unitName }</option>
+                    <option key={measurementUnit} value={measurementUnit}>{ measurementUnit }</option>
                   ))
                 }
               </Select>
@@ -116,13 +109,16 @@ const AddIngredientForm = ({ ingredientType, addIngredient, measurementUnits }: 
   );
 }
 
-const Fridge = ({ measurementUnits } : InferGetStaticPropsType<typeof getStaticProps>) => {
+const Fridge = ({ allMeasurementUnits } : InferGetStaticPropsType<typeof getStaticProps>) => {
+  // Hooks and State
   const { user } = useUser();
   const [ingredientTypes, setIngredientTypes] = useState<IngredientType[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [selectedIngredientType, setSelectedIngredientType] = useState<IngredientType | null>(null);
 
   const dispatch = useDispatch();
+  
+  // Functions
   const getIngredientTypes = async () => {
     const newIngredientTypes = await IngredientTypeAPI.indexTailoredIngredientTypes({
       limit: 8, 
@@ -134,6 +130,9 @@ const Fridge = ({ measurementUnits } : InferGetStaticPropsType<typeof getStaticP
     setIngredientTypes([...ingredientTypes, ...newIngredientTypes]);
   }
 
+  const getIngredientMeasurementUnitOptions = (ingredientType: IngredientType) => {
+    return allMeasurementUnits[ingredientType.measurementType];
+  }
 
   const addIngredient = (ingredient: Ingredient) => {
     dispatch(addNewIngredient({ ingredient }));
@@ -174,7 +173,17 @@ const Fridge = ({ measurementUnits } : InferGetStaticPropsType<typeof getStaticP
           </FridgeScrollbar>
         </GridItem>
         <GridItem p='5' rounded='5' bg='gray.50' boxShadow='md'>
-          <AddIngredientForm ingredientType={selectedIngredientType} addIngredient={addIngredient} measurementUnits={measurementUnits} />
+          { selectedIngredientType ? (
+            <AddIngredientForm 
+              ingredientType={selectedIngredientType} 
+              addIngredient={addIngredient} 
+              measurementUnitOptions={getIngredientMeasurementUnitOptions(selectedIngredientType)} 
+            />
+          ) : (
+            <Box>
+              <Heading size='md'>No ingredient is currently selected...</Heading>
+            </Box>
+          )}
         </GridItem>
       </Grid>
     </Box>
@@ -182,10 +191,10 @@ const Fridge = ({ measurementUnits } : InferGetStaticPropsType<typeof getStaticP
 }
 
 export async function getStaticProps() {
-  const measurementUnits = await MeasurementUnitAPI.indexMeasurementUnits();
+  const allMeasurementUnits = await MeasurementUnitAPI.indexMeasurementUnits();
   return {
     props: {
-      measurementUnits
+      allMeasurementUnits,
     }
   }
 }

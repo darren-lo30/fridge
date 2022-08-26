@@ -35,7 +35,7 @@ model Fridge {
 }
 
 enum MeasurementType {
-  discrete_cnt // defaults to number
+  discrete_no // defaults to number
   volume_mL // defaults to mL
   weight_g // defaults to grams
 }
@@ -52,13 +52,6 @@ model IngredientType {
   @@fulltext([name])
 }
 
-model MeasurementUnit {
-  id              String                @id @default(uuid())
-  measurementType MeasurementType
-  unitName        String                @unique
-  ingredients     Ingredient[]
-}
-
 // Instances of IngredientType stored in the fridge
 model Ingredient {
   id                String          @id @default(uuid())
@@ -69,9 +62,9 @@ model Ingredient {
   recipeId          String?
   recipe            Recipe?         @relation(fields: [recipeId], references: [id])
   amount            Decimal
-  measurementUnitId String
-  measurementUnit   MeasurementUnit @relation(fields: [measurementUnitId], references: [id])
-
+  displayUnit       String
+  lastUpdated       DateTime        @default(now())
+  
   // Every fridge can only list an ingredient type once
   @@unique([ingredientTypeId, fridgeId])
 }

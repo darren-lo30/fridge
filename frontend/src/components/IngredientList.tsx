@@ -18,7 +18,7 @@ const IngredientPreview = ({ ingredient } : { ingredient : Ingredient }) => {
           { ingredient.ingredientType.name }
         </Text>
         <Text fontSize={'xs'}>
-          { `${ingredient.amount}` }
+          { `${ingredient.displayAmount} ${ingredient.displayUnit}` }
         </Text>
       </Box>
     </Flex>

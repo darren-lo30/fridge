@@ -1,4 +1,4 @@
-import { MeasurementType } from "./MeasurementUnit";
+import { MeasurementType } from "./MeasurementUnits";
 
 export interface IngredientType {
   id: string,

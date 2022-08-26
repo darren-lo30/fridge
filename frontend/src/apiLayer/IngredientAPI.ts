@@ -7,11 +7,11 @@ const IngredientAPI = {
     const response = await api.get<RepsonseWithIngredients>(`/fridges/${fridgeId}/ingredients`, { params: { ...options }});
     return response.data.ingredients;
   },
-  createIngredient: async function(fridgeId: string, ingredientTypeId: string, amount: number, measurementUnitId: string) {
+  createIngredient: async function(fridgeId: string, ingredientTypeId: string, displayAmount: number, displayUnit: string) {
     const response = await api.post<ResponseWithIngredient>(`/fridges/${fridgeId}/ingredients`, {
       ingredientTypeId,
-      amount,
-      measurementUnitId,
+      displayAmount,
+      displayUnit,
     });
 
     return response.data.ingredient;

@@ -1,5 +1,5 @@
 import { Ingredient } from '@fridgeTypes/Ingredient'
-import { createSlice, PayloadAction, current } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 const filterUniqueIngredients = (array: Array<Ingredient>) : Array<Ingredient> => {
   return Array.from(new Map(array.map(item => [item.id, item])).values());

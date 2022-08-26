@@ -17,6 +17,7 @@
       "@controllers/*": ["src/controllers/*"],
       "@config/*": ["src/config/*"],
       "@validators/*": ["src/validators/*"],
+      "@utils/*": ["src/utils/*"],
     }
   },
   "ts-node": {

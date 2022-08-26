@@ -4,12 +4,12 @@ import pagionationSchema from './shared/paginationSchema';
 
 const createIngredientBody = z.object({
   ingredientTypeId: z.string(),
-  amount: z.preprocess(
+  displayAmount: z.preprocess(
     Number,
     z.number()
       .gte(0),
   ),
-  measurementUnitId: z.string(),
+  displayUnit: z.string(),
 });
 
 const indexFridgeIngredientsSchema = z.object({
@@ -38,15 +38,15 @@ const updateIngredientSchema = z.object({
     ingredientId: z.string(),
   }),
   body: z.object({
-    amount: z.preprocess(
+    displayAmount: z.preprocess(
       Number,
       z.number()
-        .gte(0)
-        .optional(),
+        .gte(0),
     ),
-    measurementUnitId: z.string()
-      .optional(),
-  }),
+    displayUnit: z.string(),
+  })
+    .partial()
+    .refine((data) => (data.displayAmount ? data.displayUnit : !data.displayUnit), 'Must include displayUnit and displayAmount together.'),
 });
 
 const deleteIngredientSchema = z.object({

@@ -1,5 +1,7 @@
+import { Prisma } from '@prisma/client';
 import { parseRequest } from '@src/middleware/requestValidator';
 import prisma from '@src/prisma';
+import { convertToBaseAmount, convertToReturnIngredient } from '@utils/unitConversions';
 import {
   createFridgeIngredientSchema,
   createRecipeIngredientSchema,
@@ -30,7 +32,8 @@ const indexFridgeIngredients = async (
     },
   });
 
-  return res.json({ ingredients });
+  const returnIngredients = ingredients.map((ingredient) => convertToReturnIngredient(ingredient));
+  return res.json({ ingredients: returnIngredients });
 };
 
 const createFridgeIngredient = async (
@@ -44,31 +47,32 @@ const createFridgeIngredient = async (
     },
     body:
     {
-      amount,
       ingredientTypeId,
-      measurementUnitId,
+      displayAmount,
+      displayUnit,
     },
   } = await parseRequest(createFridgeIngredientSchema, req);
 
-  const fridge = await prisma.fridge.findUniqueOrThrow({
-    where: {
-      id: fridgeId,
-    },
+  const ingredientType = await prisma.ingredientType.findUniqueOrThrow({
+    where: { id: ingredientTypeId },
   });
+
+  const amount = convertToBaseAmount(displayAmount, ingredientType.measurementType, displayUnit);
 
   const ingredient = await prisma.ingredient.create({
     data: {
-      fridgeId: fridge.id,
+      fridgeId,
       ingredientTypeId,
       amount,
-      measurementUnitId,
+      displayUnit,
     },
     include: {
       ingredientType: true,
     },
   });
 
-  return res.json({ ingredient });
+  const returnIngredient = convertToReturnIngredient(ingredient);
+  return res.json({ ingredient: returnIngredient });
 };
 
 const createRecipeIngredient = async (
@@ -82,12 +86,17 @@ const createRecipeIngredient = async (
     },
     body:
     {
-      amount,
+      displayAmount,
       ingredientTypeId,
-      measurementUnitId,
+      displayUnit,
     },
   } = await parseRequest(createRecipeIngredientSchema, req);
 
+  const ingredientType = await prisma.ingredientType.findUniqueOrThrow({
+    where: { id: ingredientTypeId },
+  });
+
+  const amount = convertToBaseAmount(displayAmount, ingredientType.measurementType, displayUnit);
   const recipe = await prisma.recipe.findUniqueOrThrow({
     where: {
       id: recipeId,
@@ -99,11 +108,15 @@ const createRecipeIngredient = async (
       recipeId: recipe.id,
       ingredientTypeId,
       amount,
-      measurementUnitId,
+      displayUnit,
+    },
+    include: {
+      ingredientType: true,
     },
   });
 
-  return res.json({ ingredient });
+  const returnIngredient = convertToReturnIngredient(ingredient);
+  return res.json({ ingredient: returnIngredient });
 };
 
 const updateIngredient = async (
@@ -113,20 +126,40 @@ const updateIngredient = async (
 ) => {
   const {
     params: { ingredientId },
-    body: { amount, measurementUnitId },
+    body: { displayUnit, displayAmount },
   } = await parseRequest(updateIngredientSchema, req);
 
-  const ingredient = await prisma.ingredient.update({
-    where: {
-      id: ingredientId,
-    },
-    data: {
-      amount,
-      measurementUnitId,
+  const ingredient = await prisma.ingredient.findUniqueOrThrow({
+    where: { id: ingredientId },
+    include: {
+      ingredientType: true,
     },
   });
 
-  return res.status(200).json({ ingredient });
+  const updateData : Prisma.IngredientUncheckedUpdateInput = {};
+
+  // Update the amount of ingredient if data is provided
+  if (displayAmount && displayUnit) {
+    updateData.amount = convertToBaseAmount(
+      displayAmount,
+      ingredient.ingredientType.measurementType,
+      displayUnit,
+    );
+    updateData.displayUnit = displayUnit;
+  }
+
+  const updatedIngredient = await prisma.ingredient.update({
+    where: {
+      id: ingredientId,
+    },
+    data: updateData,
+    include: {
+      ingredientType: true,
+    },
+  });
+
+  const returnIngredient = convertToReturnIngredient(updatedIngredient);
+  return res.status(200).json({ ingredient: returnIngredient });
 };
 
 const deleteIngredient = async (

@@ -35,7 +35,7 @@ async function main() {
     {
       name: 'strawberry',
       imageUrl: '',
-      measurementType: 'discrete_cnt',
+      measurementType: 'discrete_no',
     },
     {
       name: 'milk',
@@ -60,7 +60,7 @@ async function main() {
     {
       name: 'apple',
       imageUrl: '',
-      measurementType: 'discrete_cnt',
+      measurementType: 'discrete_no',
     },
     {
       name: 'fish',
@@ -75,85 +75,30 @@ async function main() {
     {
       name: 'egg',
       imageUrl: '',
-      measurementType: 'discrete_cnt',
+      measurementType: 'discrete_no',
     },
   ];
 
-  for (let i = 0; i < ingredientTypeData.length; i += 1) {
+  for (let i = 1; i <= ingredientTypeData.length; i += 1) {
     // eslint-disable-next-line no-await-in-loop
-    await prisma.ingredientType.create({ data: { id: String(i), ...ingredientTypeData[i] } });
+    await prisma.ingredientType.create({ data: { id: String(i), ...ingredientTypeData[i - 1] } });
   }
-
-  const measurementUnitData : Prisma.MeasurementUnitCreateInput[] = [
-    {
-
-      measurementType: 'discrete_cnt',
-      unitName: 'number',
-    },
-    {
-      measurementType: 'weight_g',
-      unitName: 'kg',
-    },
-    {
-      measurementType: 'weight_g',
-      unitName: 'lb',
-    },
-    {
-      measurementType: 'volume_mL',
-      unitName: 'L',
-    },
-    {
-      measurementType: 'volume_mL',
-      unitName: 'oz',
-    },
-  ];
-
-  measurementUnitData.forEach(async (i, index) => {
-    await prisma.measurementUnit.create({
-      data: { id: String(index), ...i },
-    });
-  });
 
   const ingredientData : Prisma.IngredientUncheckedCreateInput[] = [
     {
       amount: 4,
       ingredientTypeId: '1',
-      measurementUnitId: '1',
-    },
-    {
-      amount: 4,
-      ingredientTypeId: '4',
-      measurementUnitId: '1',
-    },
-    {
-      amount: 4,
-      ingredientTypeId: '3',
-      measurementUnitId: '1',
+      displayUnit: 'kg',
     },
     {
       amount: 4,
       ingredientTypeId: '2',
-      measurementUnitId: '1',
+      displayUnit: 'mg',
     },
     {
       amount: 4,
-      ingredientTypeId: '5',
-      measurementUnitId: '1',
-    },
-    {
-      amount: 4,
-      ingredientTypeId: '6',
-      measurementUnitId: '1',
-    },
-    {
-      amount: 4,
-      ingredientTypeId: '7',
-      measurementUnitId: '1',
-    },
-    {
-      amount: 4,
-      ingredientTypeId: '8',
-      measurementUnitId: '1',
+      ingredientTypeId: '3',
+      displayUnit: 'no',
     },
   ];
 
