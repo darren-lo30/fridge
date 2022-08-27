@@ -13,6 +13,7 @@ import {
 import express from 'express';
 
 const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, currentUser: User) => {
+  // First finds the user's fridge to look for all the ingredients that they have
   const fridge = await prisma.fridge.findFirstOrThrow({
     where: {
       userId: currentUser.id,
@@ -23,8 +24,17 @@ const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, curre
   });
 
   const findManyAndConditions : Prisma.IngredientWhereInput[] = [];
+  /*
+  Then creates an array of conditions that will be chained together checking that every
+  ingredient of the fridge has the following. The ingredient of the recipe must have an
+  ingredientTypeId matching one of the ones seen in the user's fridge (OR chain)
+  while also having an amount less than or equal to the amount of that same ingredient
+  in the user's fridge. This ensures the user has enough of the ingredient to cook the recipe
+  */
   fridge.ingredients.forEach((ingredient) => {
     findManyAndConditions.push({
+      // Both the same ingredient and the one in the recipe is less than or equal
+      // to the ingredient in the fridge
       AND: [{
         ingredientTypeId: {
           equals: ingredient.ingredientTypeId,
@@ -40,6 +50,8 @@ const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, curre
     ...indexArgs,
     where: {
       ingredients: {
+        // Runs the condition that every ingredient in the recipe exists in user's fridge and
+        // requires amount less than user has
         every: {
           OR: findManyAndConditions,
         },

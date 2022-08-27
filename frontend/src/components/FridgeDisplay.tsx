@@ -1,10 +1,14 @@
 import { Box, BoxProps, Heading } from "@chakra-ui/react";
-import IngredientList from "./IngredientList";
 import { useState, useEffect } from 'react';
 import IngredientAPI from "src/apiLayer/IngredientAPI";
 import {RootState} from "@src/store";
 import { useDispatch, useSelector } from 'react-redux'
-import { extendIngredients, clearIngredients } from "@src/reducers/ingredientsReducer";
+import { extendIngredients, clearIngredients, removeIngredient } from "@src/reducers/ingredientsReducer";
+import FridgeScrollbar from "./FridgeScrollbar";
+import { AnimatePresence, motion } from "framer-motion";
+import InfiniteScroll from "react-infinite-scroll-component";
+import FridgeSpinner from "./FridgeSpinner";
+import IngredientPreview from "./IngredientList";
 
 interface FridgeDisplayProps extends BoxProps { fridgeId: string }
 
@@ -28,6 +32,12 @@ const FridgeDisplay = ({ fridgeId, ...props } : FridgeDisplayProps) => {
     dispatch(extendIngredients({ ingredients: newIngredients }));
   }
 
+  const deleteIngredient = async (ingredientId: string) => {
+    setHasMore(true);
+    await IngredientAPI.deleteIngredient(ingredientId);
+    dispatch(removeIngredient({ ingredientId }));
+  }
+
   useEffect(() => {
     dispatch(clearIngredients());
     void getIngredients();
@@ -40,7 +50,26 @@ const FridgeDisplay = ({ fridgeId, ...props } : FridgeDisplayProps) => {
         Your Fridge
       </Heading>
 
-      <IngredientList ingredients={ingredients} hasMore={hasMore} getIngredients={getIngredients} />
+        
+      <FridgeScrollbar
+        pr='3'
+        height='100%'
+        overflow='auto'
+      >
+        <InfiniteScroll next={getIngredients} loader={<FridgeSpinner containerProps={{py: 2}} />} hasMore={hasMore} dataLength={ingredients.length}>
+            { ingredients.map((ingredient) => (
+              <AnimatePresence key={ingredient.id}>
+                <Box 
+                  key={ingredient.id} 
+                  as={motion.div}
+                  exit={{ opacity: 0 }}              
+                >
+                  <IngredientPreview ingredient={ingredient} deleteIngredient={deleteIngredient} />
+                </Box>
+              </AnimatePresence>
+            ))}
+        </InfiniteScroll>
+      </FridgeScrollbar>
     </Box>
   );
 }

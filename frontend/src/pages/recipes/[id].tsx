@@ -12,9 +12,6 @@ export const getServerSideProps : GetServerSideProps<{ recipe: Recipe }> = async
     }
   }
 
-  console.log(context.req.cookies['connect.sid']);
-  
-
   try {
     const recipe = await RecipeAPI.showRecipe(id, {
       headers: {
@@ -27,7 +24,6 @@ export const getServerSideProps : GetServerSideProps<{ recipe: Recipe }> = async
       }
     }
   } catch (err) {
-    console.log(err);
     return {
       notFound: true,
     }

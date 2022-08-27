@@ -36,6 +36,8 @@ const sharedStyles : Partial<ButtonProps & LinkProps> = {
   rounded:'5',
   py:'1',
   px:'3',
+  whiteSpace: 'normal',
+  overflowWrap: 'break-word',
 }
 
 export const FridgeButton = (props: ButtonProps & {slidedirection?: Direction}) => {
@@ -50,7 +52,7 @@ export const FridgeButton = (props: ButtonProps & {slidedirection?: Direction}) 
     { ...sharedStyles }
     { ...props }
   >
-  {props.children}
+    {props.children}
   </Button>
   );
 }

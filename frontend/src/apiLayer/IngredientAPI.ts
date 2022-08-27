@@ -15,6 +15,9 @@ const IngredientAPI = {
     });
 
     return response.data.ingredient;
+  },
+  deleteIngredient: async function(ingredientId: string) {
+    await api.delete(`/ingredients/${ingredientId}`);
   }
 }
 

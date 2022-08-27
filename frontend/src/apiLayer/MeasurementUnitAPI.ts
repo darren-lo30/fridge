@@ -1,4 +1,4 @@
-import { ResponseWithMeasurementUnits } from "@fridgeTypes/MeasurementUnits"
+import { ResponseWithMeasurementUnits } from "@fridgeTypes/MeasurementUnit"
 import api from "@src/configs/axiosConfig"
 
 const MeasurementUnitAPI = {

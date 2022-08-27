@@ -1,9 +1,9 @@
 import UserAPI from "src/apiLayer/UserAPI";
 import { Text, Heading, Stack, Box } from "@chakra-ui/react"
-import CenteredForm from "@components/CenteredForm";
-import {FridgeButton} from "@components/FridgeButton";
-import {InputWithError} from "@components/InputWithError";
-import Password from "@components/Password";
+import CenteredForm from "@src/components/forms/CenteredForm";
+import {FridgeButton} from "@components/forms/FridgeButton";
+import {InputWithError} from "@src/components/forms/InputWithError";
+import Password from "@src/components/forms/Password";
 import { useUser } from "@contexts/UserProvider";
 import { getAPIError, isAPIError } from "src/utils/errors";
 import { NextPage } from "next"
@@ -74,13 +74,13 @@ const SignIn: NextPage = () => {
             })}
           />
 
-          { errors.formError?.message ? (
+          { errors.formError?.message && (
             <Box bg='red.100' p='3' rounded='5'>
               <Text fontSize='sm' color='red.700'>
                 { errors.formError.message }
               </Text>
             </Box>
-          ) : null }
+          )}
 
           <FridgeButton
             type={'submit'}

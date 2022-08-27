@@ -1,5 +1,5 @@
 import { Flex, Box, Image, Text, Heading, Stack, ButtonGroup, LinkProps} from '@chakra-ui/react'
-import { FridgeLink } from '@components/FridgeButton'
+import { FridgeLink } from '@components/forms/FridgeButton'
 import RecipesList from '@components/RecipesList'
 import { StoredUser, useUser } from '@contexts/UserProvider'
 import type { NextPage } from 'next'

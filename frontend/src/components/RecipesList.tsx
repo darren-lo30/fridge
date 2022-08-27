@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { FridgeLink} from "./FridgeButton";
+import { FridgeLink} from "./forms/FridgeButton";
 import FridgeSpinner from "./FridgeSpinner";
 
 const RecipePreview = ({ recipe, ...props} : { recipe: Recipe} & BoxProps) => {
@@ -48,9 +48,8 @@ const RecipesList = () => {
         offset: recipes.length > 0 ? 1 : 0,
       });
       
-    if(newRecipes.length  === 0) {
+    if(newRecipes.length <= 0) {
       setHasMore(false);
-      console.log(hasMore);
     }
 
     setRecipes([ ...recipes, ...newRecipes ]);

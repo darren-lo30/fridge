@@ -24,6 +24,7 @@ const indexIngredientTypes = async (
   };
 
   if (show === 'tailored') {
+    // First finds all ingredients the user already hasw with their ingredientTypeId
     const userIngredients = await prisma.ingredient.findMany({
       where: {
         fridge: {
@@ -37,8 +38,8 @@ const indexIngredientTypes = async (
       },
     });
 
+    // Finds all ingredient types that the user does not currently have in their fridge
     const existingIngredientTypes = userIngredients.map((i) => i.ingredientTypeId);
-
     indexArgs.where = {
       ...indexArgs.where,
       id: {

@@ -15,11 +15,14 @@ const ingredientsSlice = createSlice({
     extendIngredients(state, action: PayloadAction<{ ingredients: Ingredient[]}>) {
       return filterUniqueIngredients([...state, ...action.payload.ingredients]);
     },
+    removeIngredient(state, action: PayloadAction<{ ingredientId: string }>) {
+      return state.filter((ingredient) => ingredient.id !== action.payload.ingredientId);
+    },
     clearIngredients() {
       return [];
     }
   }
 });
 
-export const { addNewIngredient, extendIngredients, clearIngredients }  = ingredientsSlice.actions;
+export const { addNewIngredient, extendIngredients, removeIngredient, clearIngredients }  = ingredientsSlice.actions;
 export default ingredientsSlice.reducer;

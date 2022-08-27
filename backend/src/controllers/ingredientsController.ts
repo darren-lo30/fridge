@@ -53,10 +53,10 @@ const createFridgeIngredient = async (
     },
   } = await parseRequest(createFridgeIngredientSchema, req);
 
+  // Converts the display amount to the base amount to be stored in the database
   const ingredientType = await prisma.ingredientType.findUniqueOrThrow({
     where: { id: ingredientTypeId },
   });
-
   const amount = convertToBaseAmount(displayAmount, ingredientType.measurementType, displayUnit);
 
   const ingredient = await prisma.ingredient.create({
@@ -92,20 +92,15 @@ const createRecipeIngredient = async (
     },
   } = await parseRequest(createRecipeIngredientSchema, req);
 
+  // Converts the display amount to the base amount to be stored in the database
   const ingredientType = await prisma.ingredientType.findUniqueOrThrow({
     where: { id: ingredientTypeId },
   });
-
   const amount = convertToBaseAmount(displayAmount, ingredientType.measurementType, displayUnit);
-  const recipe = await prisma.recipe.findUniqueOrThrow({
-    where: {
-      id: recipeId,
-    },
-  });
 
   const ingredient = await prisma.ingredient.create({
     data: {
-      recipeId: recipe.id,
+      recipeId,
       ingredientTypeId,
       amount,
       displayUnit,

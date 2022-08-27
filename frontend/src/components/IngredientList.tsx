@@ -1,44 +1,91 @@
-import { Flex, Box, Text, Image } from "@chakra-ui/react";
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { Flex, Box, Text, Image, IconButton, HStack } from "@chakra-ui/react";
 import {Ingredient} from "@fridgeTypes/Ingredient";
-import FridgeSpinner from "./FridgeSpinner";
-import FridgeScrollbar from "./FridgeScrollbar";
-const IngredientPreview = ({ ingredient } : { ingredient : Ingredient }) => {
-  return (
-    <Flex flexDirection='row' py='3' px='2' alignItems={'center'} borderTopWidth='2px' borderColor={'primary.main'}>
-      <Image
-        boxSize='50px'
-        objectFit='cover'
-        borderRadius='full'
-        src='https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc='
-        alt='Dan Abramov'
-      />
-      <Box ml='5'>  
-        <Text fontSize={'sm'} fontWeight='bold'>
-          { ingredient.ingredientType.name }
-        </Text>
-        <Text fontSize={'xs'}>
-          { `${ingredient.displayAmount} ${ingredient.displayUnit}` }
-        </Text>
-      </Box>
-    </Flex>
-  );
+import { EditIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import UpdateIngredientForm from "./forms/UpdateIngredientForm";
+import { AnimatePresence, motion } from "framer-motion";
+
+interface IngredientPreviewProps {
+  ingredient: Ingredient,
+  deleteIngredient: (ingredientId: string) => void,
 }
 
-const IngredientList = ({ ingredients, getIngredients, hasMore } : {ingredients : Ingredient[], getIngredients: () => void, hasMore : boolean }) => {
+const IngredientPreview = ({ ingredient, deleteIngredient } : IngredientPreviewProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <FridgeScrollbar
-      pr='3'
-      height='100%'
-      overflow='auto'
+    <Box 
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      bg={isHovered ? 'gray.100' : 'inherit'}
     >
-      <InfiniteScroll next={getIngredients} loader={<FridgeSpinner containerProps={{py: 2}} />} hasMore={hasMore} dataLength={ingredients.length}>
-        { ingredients.map((ingredient) => (
-          <IngredientPreview key={ingredient.id} ingredient={ingredient} />
-        ))}
-      </InfiniteScroll>
-    </FridgeScrollbar>
+      <Flex width='100%' flexDirection='row' py='3' px='2' alignItems={'center'} borderTopWidth='2px' borderColor={'primary.main'} >
+        <Image
+          boxSize='50px'
+          objectFit='cover'
+          borderRadius='full'
+          src='https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc='
+          alt={`Image of ${ingredient.ingredientType.name}`}
+        />
+        <Box ml='5'>  
+          <Text fontSize={'sm'} fontWeight='bold'>
+            { ingredient.ingredientType.name }
+          </Text>
+          <Text fontSize={'xs'} textAlign='left'>
+            { `${ingredient.displayAmount} ${ingredient.displayUnit}` }
+          </Text>
+        </Box>
+
+
+        { (isHovered || isEditing) && (
+          <Box ml='auto'>
+            <HStack>
+              <IconButton 
+                size='sm' 
+                icon={<EditIcon />} 
+                aria-label={"Edit ingredient"} 
+                borderRadius='full' 
+                {...(isEditing ? {
+                  bg: 'primary.200', 
+                  _hover: {bg: 'primary.300'},
+                  _active: {bg: 'primary.400'}
+                } : null)} 
+                onClick={() => {setIsEditing(!isEditing)}} 
+              />
+              <IconButton 
+                size='sm' 
+                bg='red.200' 
+                _hover={{bg: 'red.300'}} 
+                _active={{bg: 'red.400'}} 
+                icon={<SmallCloseIcon />} 
+                aria-label={"Edit ingredient"} 
+                borderRadius='full' 
+                onClick={() => {deleteIngredient(ingredient.id)}}
+              />
+            </HStack>
+          </Box>
+        )}
+      </Flex>
+      <AnimatePresence>
+        { isEditing && (
+            <Box 
+              as={motion.div} 
+              key={ingredient.id}
+              overflow='hidden'
+              initial={{ maxHeight: '0px', y: '-50%', opacity: 0 }}
+              animate={{ maxHeight: '70px', y: '0', opacity: 1 }}
+              transition='0.3s ease-out'  
+              exit={{ maxHeight: '-10px', opacity: 0 }}
+            >
+              <Box p='3'>
+                <UpdateIngredientForm ingredient={ingredient}/>
+              </Box>
+            </Box> 
+        )}
+      </AnimatePresence>
+    </Box>
   );
 }
 
-export default IngredientList;
+export default IngredientPreview;

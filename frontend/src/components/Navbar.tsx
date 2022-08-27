@@ -56,7 +56,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
               <NavLink key={link.href} href={link.href}>{link.label}</NavLink>
             ))}
  
-            {user ? (
+            {user && (
             <Menu
               placement="bottom-end"
             >   
@@ -86,7 +86,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
                 ))}
               </MenuList>
             </Menu>
-            ) : null }
+            )}
           </HStack>
           
           <IconButton 
@@ -102,7 +102,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
       </Box>
       {/* Mobile drop down navbar */}
       {
-        isOpen ? (
+        isOpen && (
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4}>
               <Flex direction={'column'}>
@@ -112,7 +112,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
               </Flex>
             </Stack>    
           </Box>
-        ) : null
+        )
       }
     </Bounds>
   )
