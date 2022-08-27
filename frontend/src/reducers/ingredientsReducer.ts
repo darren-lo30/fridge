@@ -18,11 +18,14 @@ const ingredientsSlice = createSlice({
     removeIngredient(state, action: PayloadAction<{ ingredientId: string }>) {
       return state.filter((ingredient) => ingredient.id !== action.payload.ingredientId);
     },
+    addOrReplaceIngredient(state, action: PayloadAction<{ ingredient: Ingredient}>) {
+      return [action.payload.ingredient, ...state.filter((ingredient) => ingredient.id !== action.payload.ingredient.id)];
+    },
     clearIngredients() {
       return [];
     }
   }
 });
 
-export const { addNewIngredient, extendIngredients, removeIngredient, clearIngredients }  = ingredientsSlice.actions;
+export const { addNewIngredient, extendIngredients, removeIngredient, clearIngredients, addOrReplaceIngredient }  = ingredientsSlice.actions;
 export default ingredientsSlice.reducer;

@@ -1,3 +1,6 @@
+import { IngredientType } from "@fridgeTypes/IngredientType";
+import { MeasurementUnitOptions } from "@fridgeTypes/MeasurementUnit";
+
 export const makeCancelable = (promise: Promise<unknown>) => {
   let hasCanceled_ = false;
 
@@ -15,3 +18,7 @@ export const makeCancelable = (promise: Promise<unknown>) => {
     },
   };
 };
+
+export const getDisplayUnitOptions = (measurementUnitOptions: MeasurementUnitOptions, ingredientType: IngredientType) => {
+  return measurementUnitOptions[ingredientType.measurementType];
+}

@@ -1,57 +1,27 @@
-import IngredientTypeAPI from "src/apiLayer/IngredientTypeAPI";
-import { Box, Flex, Grid, GridItem, Heading, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Heading, Input } from "@chakra-ui/react";
 import FridgeDisplay from "@components/FridgeDisplay";
-import FridgeScrollbar from "@components/FridgeScrollbar";
-import FridgeSpinner from "@components/FridgeSpinner";
 import { useUser } from "@contexts/UserProvider";
 import { Ingredient } from "@fridgeTypes/Ingredient";
 import { IngredientType } from "@fridgeTypes/IngredientType";
-import { InferGetStaticPropsType } from "next";
-import React, { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { NextPage } from "next";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addNewIngredient } from "@src/reducers/ingredientsReducer";
-import IngredientTypeCard from "@components/IngredientTypeCard";
-import MeasurementUnitAPI from "@src/apiLayer/MeasurementUnitAPI";
 import AddIngredientForm from "@components/forms/AddIngredientForm";
+import IngredientTypeList from "@src/components/IngredientTypesList";
 
-
-
-
-const Fridge = ({ allDisplayUnitOptions } : InferGetStaticPropsType<typeof getStaticProps>) => {
+const Fridge : NextPage = () => {
   // Hooks and State
   const { user } = useUser();
-  const [ingredientTypes, setIngredientTypes] = useState<IngredientType[]>([]);
-  const [hasMore, setHasMore] = useState(true);
   const [selectedIngredientType, setSelectedIngredientType] = useState<IngredientType | null>(null);
 
   const dispatch = useDispatch();
-  
-  // Functions
-  const getIngredientTypes = async () => {
-    const newIngredientTypes = await IngredientTypeAPI.indexTailoredIngredientTypes({
-      limit: 6,
-      cursor: ingredientTypes.length > 0 ? ingredientTypes[ingredientTypes.length - 1].id : undefined,
-      offset: ingredientTypes.length > 0 ? 1 : 0,
-    })
-    console.log(newIngredientTypes);
-    console.log(hasMore);
-    if(newIngredientTypes.length <= 0) setHasMore(false);
-    setIngredientTypes([...ingredientTypes, ...newIngredientTypes]);
-  }
-
-  const getIngredientTypeDisplayUnitOptions = (ingredientType: IngredientType) => {
-    return allDisplayUnitOptions[ingredientType.measurementType];
-  }
 
   const addIngredient = (ingredient: Ingredient) => {
     dispatch(addNewIngredient({ ingredient }));
+    setSelectedIngredientType(null);
   }
 
-  useEffect(() => {
-    void getIngredientTypes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   
   if(!user) {
     throw new Error("Please sign out and sign in again.");
@@ -73,23 +43,13 @@ const Fridge = ({ allDisplayUnitOptions } : InferGetStaticPropsType<typeof getSt
             <Input placeholder='search' width={{sm: '100%', md: '40%'}} rounded='full' borderColor='primary.500' borderWidth='2px' />
           </Flex> 
 
-          {/* Ingredient List */}
-          <FridgeScrollbar flex='1' flexBasis='0' overflow='auto' id="scrollbar" pr='3'>
-            <InfiniteScroll scrollableTarget="scrollbar" style={{ overflow: 'hidden'}} hasMore={hasMore} next={getIngredientTypes} dataLength={ingredientTypes.length} loader={<FridgeSpinner />} >
-              <SimpleGrid overflow='hidden' columns={{ sm: 1, md: 2, lg: 3}} gap='3' >
-                {ingredientTypes.map((ingredientType) => (
-                  <IngredientTypeCard key={ingredientType.id} ingredientType={ingredientType} selectIngredientType={(ingredientType: IngredientType) => setSelectedIngredientType(ingredientType)}/>
-                ))}
-              </SimpleGrid>
-            </InfiniteScroll>
-          </FridgeScrollbar>
+          <IngredientTypeList selectIngredientType={(ingredientType) => {setSelectedIngredientType(ingredientType)}}/>
         </GridItem>
         <GridItem p='5' rounded='5' bg='gray.50' boxShadow='md'>
           { selectedIngredientType ? (
             <AddIngredientForm 
               ingredientType={selectedIngredientType} 
               addIngredient={addIngredient} 
-              displayUnitOptions={getIngredientTypeDisplayUnitOptions(selectedIngredientType)} 
             />
           ) : (
             <Box>
@@ -102,13 +62,5 @@ const Fridge = ({ allDisplayUnitOptions } : InferGetStaticPropsType<typeof getSt
   )
 }
 
-export async function getStaticProps() {
-  const allDisplayUnitOptions = await MeasurementUnitAPI.indexMeasurementUnits();
-  return {
-    props: {
-      allDisplayUnitOptions,
-    }
-  }
-}
 
 export default Fridge;

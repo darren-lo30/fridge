@@ -12,6 +12,7 @@ import { UserProvider, useUser } from '@contexts/UserProvider';
 import { Bounds } from '@components/Bounds';
 import { Provider } from 'react-redux';
 import { store } from '@src/store';
+import { MeasurementUnitProvider } from '@src/contexts/MeasurementUnitProvider';
 
 const FridgeNavBar = () => {
   const { user }= useUser();
@@ -32,21 +33,23 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <Provider store={store}>
       <ChakraProvider theme={theme}>
-        <UserProvider>
-          <Box 
-            display={'flex'} 
-            bg={'background'} 
-            minHeight={'100vh'}
-            flexDir={'column'}
-          > 
-            <FridgeNavBar/>  
-            <Bounds display={'flex'} flex={'1'} py={'8'}>
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <Component {...pageProps} />    
-              </ErrorBoundary>
-            </Bounds>
-          </Box>
-        </UserProvider>
+        <MeasurementUnitProvider>
+          <UserProvider>
+            <Box 
+              display={'flex'} 
+              bg={'background'} 
+              minHeight={'100vh'}
+              flexDir={'column'}
+            > 
+              <FridgeNavBar/>  
+              <Bounds display={'flex'} flex={'1'} py={'8'}>
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                  <Component {...pageProps} />    
+                </ErrorBoundary>
+              </Bounds>
+            </Box>
+          </UserProvider>
+        </MeasurementUnitProvider>
       </ChakraProvider>
     </Provider>
   );

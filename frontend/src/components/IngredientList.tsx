@@ -14,6 +14,10 @@ const IngredientPreview = ({ ingredient, deleteIngredient } : IngredientPreviewP
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const onUpdate = () => {
+    setIsEditing(false);
+  }
+  
   return (
     <Box 
       onMouseEnter={() => setIsHovered(true)}
@@ -74,12 +78,12 @@ const IngredientPreview = ({ ingredient, deleteIngredient } : IngredientPreviewP
               key={ingredient.id}
               overflow='hidden'
               initial={{ maxHeight: '0px', y: '-50%', opacity: 0 }}
-              animate={{ maxHeight: '70px', y: '0', opacity: 1 }}
+              animate={{ maxHeight: '200px', y: '0', opacity: 1 }}
               transition='0.3s ease-out'  
               exit={{ maxHeight: '-10px', opacity: 0 }}
             >
               <Box p='3'>
-                <UpdateIngredientForm ingredient={ingredient}/>
+                <UpdateIngredientForm ingredient={ingredient} onUpdate={onUpdate} />
               </Box>
             </Box> 
         )}

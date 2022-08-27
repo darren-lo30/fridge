@@ -1,18 +1,18 @@
 import IngredientAPI from "src/apiLayer/IngredientAPI";
-import { Box, Flex, FormControl, FormLabel, Heading,  InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
+import { FormControl, Heading,  InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
 import { FridgeButton } from "@components/forms/FridgeButton";
 import { InputWithError } from "@src/components/forms/InputWithError";
 import { useUser } from "@contexts/UserProvider";
 import { Ingredient } from "@fridgeTypes/Ingredient";
 import { IngredientType } from "@fridgeTypes/IngredientType";
-import React, { useEffect, useState } from "react";
 import { useForm } from "src/utils/forms";
+import { useMeasurementUnit } from "@src/contexts/MeasurementUnitProvider";
+import { getDisplayUnitOptions } from "@src/utils/fridge";
 
 
 interface AddIngredientFormProps {
   ingredientType: IngredientType,
   addIngredient: (ingredient: Ingredient) => void,
-  displayUnitOptions: string[],
 }
 
 interface AddIngredientFormData {
@@ -20,7 +20,7 @@ interface AddIngredientFormData {
   displayUnit: string,
 }
 
-const AddIngredientForm = ({ ingredientType, addIngredient, displayUnitOptions }: AddIngredientFormProps) => {
+const AddIngredientForm = ({ ingredientType, addIngredient }: AddIngredientFormProps) => {
   const {
     handleSubmit,
     register,
@@ -31,20 +31,14 @@ const AddIngredientForm = ({ ingredientType, addIngredient, displayUnitOptions }
   const {user} = useUser();
   if(!user) throw new Error('Must log in');
 
-  const [ selectedUnits, setSelectedUnits ] = useState('');
-  useEffect(() => {
-    setSelectedUnits(displayUnitOptions[0] || '');
-
-    return () => {
-      reset();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ingredientType]);
+  // Get display unit options when creating the ingredient
+  const { measurementUnitOptions } = useMeasurementUnit();
+  const displayUnitOptions = getDisplayUnitOptions(measurementUnitOptions, ingredientType);
 
   const onSubmit = async (data: AddIngredientFormData) => {
     const { displayAmount, displayUnit } = data; 
     try {
-      const ingredient = await IngredientAPI.createIngredient(user.fridgeId, ingredientType.id, displayAmount, displayUnit );
+      const ingredient = await IngredientAPI.createIngredient(user.fridgeId, { ingredientTypeId: ingredientType.id, displayAmount, displayUnit });
       addIngredient(ingredient);
       reset();
     } catch (e) {
@@ -58,18 +52,18 @@ const AddIngredientForm = ({ ingredientType, addIngredient, displayUnitOptions }
         Adding {ingredientType.name}
       </Heading>
       <FormControl mb='3'>
-        <Flex gap='2' alignItems={'end'}>
-          <Box>
-            <FormLabel>Units</FormLabel>
+        <InputGroup maxWidth='300px'>
+          <InputWithError 
+            type='number' 
+            placeholder={'Amount'}
+            isRequired={true}
+            {...register('displayAmount') }
+          />
+          <InputRightAddon p='0'>
             <Select 
               minWidth='max-content'
               isRequired={true}
-              {...register('displayUnit', {
-                onChange(event: React.FormEvent<HTMLInputElement>) {
-                  setSelectedUnits(event.currentTarget.value)
-                },
-              })
-              }
+              {...register('displayUnit') }
             >
               {
                 displayUnitOptions.map((measurementUnit) => (
@@ -77,19 +71,8 @@ const AddIngredientForm = ({ ingredientType, addIngredient, displayUnitOptions }
                 ))
               }
             </Select>
-          </Box>
-          <InputGroup maxWidth='300px'>
-            <InputWithError 
-              type='number' 
-              placeholder={'Amount'}
-              isRequired={true}
-              {...register('displayAmount') }
-            />
-            <InputRightAddon>
-              { selectedUnits }
-            </InputRightAddon>
-          </InputGroup>
-        </Flex>
+          </InputRightAddon>
+        </InputGroup>
       </FormControl>
       <FridgeButton slidedirection="bottom" type='submit'>
         Add Ingredient

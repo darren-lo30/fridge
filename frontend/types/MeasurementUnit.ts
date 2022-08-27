@@ -1,7 +1,7 @@
-export type MeasurementType = 'discrete_cnt' | 'volume_mL' | 'weight_g';
+export type MeasurementType = 'discrete_no' | 'volume_mL' | 'weight_g';
 
 export interface MeasurementUnitOptions {
-  discrete_cnt: Array<string>,
+  discrete_no: Array<string>,
   volume_mL: Array<string>,
   weight_g: Array<string>
 }
