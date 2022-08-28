@@ -1,6 +1,6 @@
 import { Flex, Box, Image, Text, Heading, Stack, ButtonGroup, LinkProps} from '@chakra-ui/react'
 import { FridgeLink } from '@components/forms/FridgeButton'
-import RecipesList from '@components/RecipesList'
+import RecipeList from '@src/components/RecipeList'
 import { StoredUser, useUser } from '@contexts/UserProvider'
 import type { NextPage } from 'next'
 import { motion } from 'framer-motion';
@@ -20,9 +20,9 @@ const AuthedView = ({ user } : { user: StoredUser }) => {
     <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'} gap={'3rem'}>
       <Box flex={'2'} p={'5'} rounded={'5'}>
         <Heading size='lg'>
-          Recipes For You
+          Recipes For Me
         </Heading>
-        <RecipesList />
+        <RecipeList indexType='tailored'/>
       </Box>
       
       <FridgeDisplay boxShadow='md' display='flex' flexDir='column' flex={'1'} p={'5'} rounded={'5'} height='80%' maxHeight='600px' bg={'gray.50'} fridgeId={user.fridgeId} />          

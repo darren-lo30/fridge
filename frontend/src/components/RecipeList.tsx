@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { FridgeLink} from "./forms/FridgeButton";
 import FridgeSpinner from "./FridgeSpinner";
+import { PaginationParams } from "@fridgeTypes/API";
+import { useUser } from "@src/contexts/UserProvider";
 
 const RecipePreview = ({ recipe, ...props} : { recipe: Recipe} & BoxProps) => {
   return (
@@ -36,19 +38,38 @@ const RecipePreview = ({ recipe, ...props} : { recipe: Recipe} & BoxProps) => {
 }
 
 
+interface RecipeListProps {
+  indexType: 'tailored' | 'all' | 'authored',
+}
 
-const RecipesList = () => {
+const RecipeList = ({ indexType } : RecipeListProps ) => {
+  const { user } = useUser();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [hasMore, setHasMore] = useState(true);
   
   const getRecipes = async () => {
-    const newRecipes = await RecipeAPI.indexTailoredRecipes(
-      { limit: 4, 
-        cursor: recipes.length > 0 ? recipes[recipes.length - 1].id : undefined,
-        offset: recipes.length > 0 ? 1 : 0,
-      });
-      
-    if(newRecipes.length <= 0) {
+    const limit = 4;
+    const paginationParams : PaginationParams = { 
+      limit, 
+      cursor: recipes.length > 0 ? recipes[recipes.length - 1].id : undefined,
+      offset: recipes.length > 0 ? 1 : 0,
+    };
+
+    let newRecipes : Recipe[];
+    
+    if(indexType === 'tailored') {
+      newRecipes = await RecipeAPI.indexTailoredRecipes(paginationParams);
+    } else if(indexType === 'all') {
+      newRecipes = await RecipeAPI.indexAllRecipes(paginationParams);
+    } else {
+      if(!user){ 
+        throw new Error('User must be authenticated to view their recipes.');
+      }
+
+      newRecipes = await RecipeAPI.indexUserRecipes(user.id, paginationParams);
+    }
+
+    if(newRecipes.length < limit) {
       setHasMore(false);
     }
 
@@ -85,4 +106,4 @@ const RecipesList = () => {
   
 }
 
-export default RecipesList;
+export default RecipeList;

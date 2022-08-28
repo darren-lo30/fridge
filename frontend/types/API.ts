@@ -3,3 +3,7 @@ export interface PaginationParams {
   cursor?: string, 
   offset?: number
 }
+
+export interface SearchParams {
+  search?: string,
+}

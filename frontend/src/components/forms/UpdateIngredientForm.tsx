@@ -4,8 +4,8 @@ import IngredientAPI from "@src/apiLayer/IngredientAPI";
 import { useMeasurementUnit } from "@src/contexts/MeasurementUnitProvider";
 import { addOrReplaceIngredient } from "@src/reducers/ingredientsReducer";
 import { getDisplayUnitOptions } from "@src/utils/fridge";
+import { useAppDispatch } from "@src/utils/hooks";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { FridgeButton } from "./FridgeButton";
 import { InputWithError } from "./InputWithError";
 
@@ -34,7 +34,7 @@ const UpdateIngredientForm = ({ ingredient, onUpdate } : UpdateIngredientFormPro
   const { measurementUnitOptions } = useMeasurementUnit();
   const displayUnitOptions = getDisplayUnitOptions(measurementUnitOptions, ingredient.ingredientType);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onSubmit = async (data: UpdateIngredientFormData) => {
     const { displayAmount, displayUnit } = data;

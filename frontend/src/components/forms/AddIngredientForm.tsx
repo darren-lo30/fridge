@@ -1,18 +1,20 @@
 import IngredientAPI from "src/apiLayer/IngredientAPI";
-import { FormControl, Heading,  InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
+import { BoxProps, FormControl, Heading,  InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
 import { FridgeButton } from "@components/forms/FridgeButton";
 import { InputWithError } from "@src/components/forms/InputWithError";
 import { useUser } from "@contexts/UserProvider";
-import { Ingredient } from "@fridgeTypes/Ingredient";
 import { IngredientType } from "@fridgeTypes/IngredientType";
 import { useForm } from "src/utils/forms";
 import { useMeasurementUnit } from "@src/contexts/MeasurementUnitProvider";
 import { getDisplayUnitOptions } from "@src/utils/fridge";
+import { removeIngredientType } from "@src/reducers/ingredientTypesReducer";
+import { addNewIngredient } from "@src/reducers/ingredientsReducer";
+import { useAppDispatch } from "@src/utils/hooks";
 
 
-interface AddIngredientFormProps {
+interface AddIngredientFormProps extends BoxProps {
   ingredientType: IngredientType,
-  addIngredient: (ingredient: Ingredient) => void,
+  onSubmitCb: () => void,
 }
 
 interface AddIngredientFormData {
@@ -20,7 +22,7 @@ interface AddIngredientFormData {
   displayUnit: string,
 }
 
-const AddIngredientForm = ({ ingredientType, addIngredient }: AddIngredientFormProps) => {
+const AddIngredientForm = ({ ingredientType, onSubmitCb }: AddIngredientFormProps) => {
   const {
     handleSubmit,
     register,
@@ -35,11 +37,21 @@ const AddIngredientForm = ({ ingredientType, addIngredient }: AddIngredientFormP
   const { measurementUnitOptions } = useMeasurementUnit();
   const displayUnitOptions = getDisplayUnitOptions(measurementUnitOptions, ingredientType);
 
+  const dispatch = useAppDispatch();
+  
   const onSubmit = async (data: AddIngredientFormData) => {
     const { displayAmount, displayUnit } = data; 
     try {
       const ingredient = await IngredientAPI.createIngredient(user.fridgeId, { ingredientTypeId: ingredientType.id, displayAmount, displayUnit });
-      addIngredient(ingredient);
+      
+      // Add ingredient to list of ingredients in fridge
+      // Remove ingredient type from those available for user to pick from
+
+      dispatch(addNewIngredient({ ingredient }));
+      dispatch(removeIngredientType({ ingredientTypeId: ingredient.ingredientType.id }));  
+
+      onSubmitCb();
+  
       reset();
     } catch (e) {
       setError('formError', { message: 'Something went wrong' });

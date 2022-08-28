@@ -13,6 +13,7 @@ import { Bounds } from '@components/Bounds';
 import { Provider } from 'react-redux';
 import { store } from '@src/store';
 import { MeasurementUnitProvider } from '@src/contexts/MeasurementUnitProvider';
+import RouterGuard from '@src/components/RouterGuard';
 
 const FridgeNavBar = () => {
   const { user }= useUser();
@@ -35,19 +36,21 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <ChakraProvider theme={theme}>
         <MeasurementUnitProvider>
           <UserProvider>
-            <Box 
-              display={'flex'} 
-              bg={'background'} 
-              minHeight={'100vh'}
-              flexDir={'column'}
-            > 
-              <FridgeNavBar/>  
-              <Bounds display={'flex'} flex={'1'} py={'8'}>
-                <ErrorBoundary FallbackComponent={ErrorFallback}>
-                  <Component {...pageProps} />    
-                </ErrorBoundary>
-              </Bounds>
-            </Box>
+            <RouterGuard>
+              <Box 
+                display={'flex'} 
+                bg={'background'} 
+                minHeight={'100vh'}
+                flexDir={'column'}
+              > 
+                <FridgeNavBar/>  
+                <Bounds display={'flex'} flex={'1'} py={'8'}>
+                  <ErrorBoundary FallbackComponent={ErrorFallback}>
+                    <Component {...pageProps} />    
+                  </ErrorBoundary>
+                </Bounds>
+              </Box>
+            </RouterGuard>
           </UserProvider>
         </MeasurementUnitProvider>
       </ChakraProvider>

@@ -18,10 +18,17 @@ const indexFridgeIngredients = async (
 ) => {
   const {
     params: { fridgeId },
-    query: { cursor, limit, offset },
+    query: {
+      cursor, limit, offset, search,
+    },
   } = await parseRequest(indexFridgeIngredientsSchema, req);
   const ingredients = await prisma.ingredient.findMany({
     where: {
+      ingredientType: {
+        name: {
+          contains: search,
+        },
+      },
       fridgeId,
     },
     take: limit,
@@ -30,6 +37,10 @@ const indexFridgeIngredients = async (
     include: {
       ingredientType: true,
     },
+    orderBy: {
+      lastUpdated: 'desc',
+    },
+
   });
 
   const returnIngredients = ingredients.map((ingredient) => convertToReturnIngredient(ingredient));
@@ -131,7 +142,9 @@ const updateIngredient = async (
     },
   });
 
-  const updateData : Prisma.IngredientUncheckedUpdateInput = {};
+  const updateData : Prisma.IngredientUncheckedUpdateInput = {
+    lastUpdated: new Date(),
+  };
 
   // Update the amount of ingredient if data is provided
   if (displayAmount && displayUnit) {

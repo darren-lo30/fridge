@@ -25,8 +25,6 @@ const themeConfig = {
       "a400": "#76ff03",
       "a700": "#64dd17"
     },
-
-
     secondary: {
       "main": '#ff8a65',
       "50": "#fbe9e7",
@@ -48,6 +46,13 @@ const themeConfig = {
   },
   shadows: {
     outline: 'red',
+  },
+  styles: {
+    global: {
+      '::-webkit-search-cancel-button': {
+        display: 'none',
+      }
+    }
   }
 }
 

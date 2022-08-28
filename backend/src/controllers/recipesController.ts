@@ -57,9 +57,6 @@ const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, curre
         },
       },
     },
-    include: {
-      author: true,
-    },
   });
 
   return recipes;
@@ -82,6 +79,9 @@ const indexUserRecipes = async (
     take: limit,
     skip: offset,
     cursor: cursor ? { id: cursor } : undefined,
+    include: {
+      author: true,
+    },
   });
 
   return res.json({ recipes });
@@ -105,6 +105,7 @@ const indexRecipes = async (
     cursor: cursor ? { id: cursor } : undefined,
     include: {
       ingredients: true,
+      author: true,
     },
   };
 

@@ -4,18 +4,29 @@ import { EditIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import UpdateIngredientForm from "./forms/UpdateIngredientForm";
 import { AnimatePresence, motion } from "framer-motion";
+import IngredientAPI from "@src/apiLayer/IngredientAPI";
+import { removeIngredient } from "@src/reducers/ingredientsReducer";
+import { addNewIngredientType } from "@src/reducers/ingredientTypesReducer";
+import { useAppDispatch } from "@src/utils/hooks";
 
 interface IngredientPreviewProps {
   ingredient: Ingredient,
-  deleteIngredient: (ingredientId: string) => void,
 }
 
-const IngredientPreview = ({ ingredient, deleteIngredient } : IngredientPreviewProps) => {
+const IngredientPreview = ({ ingredient } : IngredientPreviewProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const dispatch = useAppDispatch();
+  
   const onUpdate = () => {
     setIsEditing(false);
+  }
+
+  const deleteIngredient = async () => {
+    await IngredientAPI.deleteIngredient(ingredient.id);
+    dispatch(removeIngredient({ ingredientId: ingredient.id }));
+    dispatch(addNewIngredientType({ ingredientType: ingredient.ingredientType }));
   }
   
   return (
@@ -65,7 +76,7 @@ const IngredientPreview = ({ ingredient, deleteIngredient } : IngredientPreviewP
                 icon={<SmallCloseIcon />} 
                 aria-label={"Edit ingredient"} 
                 borderRadius='full' 
-                onClick={() => {deleteIngredient(ingredient.id)}}
+                onClick={() => deleteIngredient()}
               />
             </HStack>
           </Box>

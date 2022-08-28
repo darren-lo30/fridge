@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { z } from 'zod';
 import pagionationSchema from './shared/paginationSchema';
+import searchSchema from './shared/searchSchema';
 
 const createIngredientBody = z.object({
   ingredientTypeId: z.string(),
@@ -13,7 +14,7 @@ const createIngredientBody = z.object({
 });
 
 const indexFridgeIngredientsSchema = z.object({
-  query: pagionationSchema,
+  query: pagionationSchema.merge(searchSchema),
   params: z.object({
     fridgeId: z.string(),
   }),

@@ -1,28 +1,19 @@
-import { Box, Flex, Grid, GridItem, Heading, Input } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Heading } from "@chakra-ui/react";
 import FridgeDisplay from "@components/FridgeDisplay";
 import { useUser } from "@contexts/UserProvider";
-import { Ingredient } from "@fridgeTypes/Ingredient";
 import { IngredientType } from "@fridgeTypes/IngredientType";
 import { NextPage } from "next";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addNewIngredient } from "@src/reducers/ingredientsReducer";
 import AddIngredientForm from "@components/forms/AddIngredientForm";
 import IngredientTypeList from "@src/components/IngredientTypesList";
+import { SearchBar } from "@src/components/forms/SearchBar";
 
 const Fridge : NextPage = () => {
   // Hooks and State
   const { user } = useUser();
+  const [search, setSearch] = useState('');
   const [selectedIngredientType, setSelectedIngredientType] = useState<IngredientType | null>(null);
 
-  const dispatch = useDispatch();
-
-  const addIngredient = (ingredient: Ingredient) => {
-    dispatch(addNewIngredient({ ingredient }));
-    setSelectedIngredientType(null);
-  }
-
-  
   if(!user) {
     throw new Error("Please sign out and sign in again.");
   }
@@ -40,16 +31,19 @@ const Fridge : NextPage = () => {
             <Heading size='lg' mb='2'>
               Add Ingredients
             </Heading>
-            <Input placeholder='search' width={{sm: '100%', md: '40%'}} rounded='full' borderColor='primary.500' borderWidth='2px' />
+            <SearchBar 
+              width={{sm: '100%', md: '40%'}} 
+              value={search} onChange={(e) => setSearch(e.currentTarget.value)} 
+            />
           </Flex> 
 
-          <IngredientTypeList selectIngredientType={(ingredientType) => {setSelectedIngredientType(ingredientType)}}/>
+          <IngredientTypeList search={search} selectIngredientType={(ingredientType) => {setSelectedIngredientType(ingredientType)}}/>
         </GridItem>
         <GridItem p='5' rounded='5' bg='gray.50' boxShadow='md'>
           { selectedIngredientType ? (
             <AddIngredientForm 
               ingredientType={selectedIngredientType} 
-              addIngredient={addIngredient} 
+              onSubmitCb={() => setSelectedIngredientType(null)}
             />
           ) : (
             <Box>

@@ -1,7 +1,8 @@
 import { SimpleGrid } from "@chakra-ui/react";
 import { IngredientType } from "@fridgeTypes/IngredientType";
-import IngredientTypeAPI from "@src/apiLayer/IngredientTypeAPI";
-import { useEffect, useState } from "react";
+import { clearIngredientTypes, extendIngredientTypes } from "@src/reducers/ingredientTypesReducer";
+import { useAppDispatch, useAppSelector } from "@src/utils/hooks";
+import { useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FridgeScrollbar from "./FridgeScrollbar";
 import FridgeSpinner from "./FridgeSpinner";
@@ -9,27 +10,23 @@ import IngredientTypeCard from "./IngredientTypeCard";
 
 interface IngredientTypeListProps {
   selectIngredientType: (ingredientType: IngredientType) => void,
+  search?: string,
 }
 
-const IngredientTypeList = ({ selectIngredientType } : IngredientTypeListProps) => {
-  const [ingredientTypes, setIngredientTypes] = useState<IngredientType[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  
+const IngredientTypeList = ({ selectIngredientType, search} : IngredientTypeListProps) => {  
+  const ingredientTypes = useAppSelector((state) => state.ingredientTypeData.ingredientTypes);
+  const hasMore = useAppSelector((state) => state.ingredientTypeData.hasMoreIngredientTypes);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
+    dispatch(clearIngredientTypes());
     void getIngredientTypes();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [search]);
   
   // Functions
   const getIngredientTypes = async () => {
-    const newIngredientTypes = await IngredientTypeAPI.indexTailoredIngredientTypes({
-      limit: 6,
-      cursor: ingredientTypes.length > 0 ? ingredientTypes[ingredientTypes.length - 1].id : undefined,
-      offset: ingredientTypes.length > 0 ? 1 : 0,
-    })
-    
-    if(newIngredientTypes.length <= 0) setHasMore(false);
-    setIngredientTypes([...ingredientTypes, ...newIngredientTypes]);
+    await dispatch(extendIngredientTypes({ search }));
   }
   
   return (

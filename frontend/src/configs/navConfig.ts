@@ -25,3 +25,8 @@ export const profileLinks : NavbarProps['navLinks'] = [
 
 export const nonAuthedNavLinks : NavbarProps['navLinks'] = []
 
+export const nonAuthedRoutes = [
+  '/sign-in',
+  '/sign-out',
+  '/'
+]

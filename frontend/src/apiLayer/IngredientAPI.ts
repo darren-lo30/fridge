@@ -1,10 +1,10 @@
 import api from "@configs/axiosConfig";
-import { PaginationParams } from "@fridgeTypes/API";
+import { PaginationParams, SearchParams } from "@fridgeTypes/API";
 import { RepsonseWithIngredients, ResponseWithIngredient } from "@fridgeTypes/Ingredient";
 
 const IngredientAPI = {
-  indexFridgeIngredients: async function (fridgeId: string, options: PaginationParams) {
-    const response = await api.get<RepsonseWithIngredients>(`/fridges/${fridgeId}/ingredients`, { params: { ...options }});
+  indexFridgeIngredients: async function (fridgeId: string, options: PaginationParams & SearchParams) {
+    const response = await api.get<RepsonseWithIngredients>(`/fridges/${fridgeId}/ingredients`, { params: options });
     return response.data.ingredients;
   },
   createIngredient: async function(fridgeId: string, createData: { ingredientTypeId: string, displayAmount: number, displayUnit: string }) {
