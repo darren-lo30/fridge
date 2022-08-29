@@ -1,5 +1,5 @@
 import IngredientAPI from "src/apiLayer/IngredientAPI";
-import { BoxProps, FormControl, Heading,  InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
+import { Box, BoxProps, FormControl, Heading,  InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
 import { FridgeButton } from "@components/forms/FridgeButton";
 import { InputWithError } from "@src/components/forms/InputWithError";
 import { useUser } from "@contexts/UserProvider";
@@ -13,8 +13,10 @@ import { useAppDispatch } from "@src/utils/hooks";
 
 
 interface AddIngredientFormProps extends BoxProps {
-  ingredientType: IngredientType,
-  onSubmitCb: () => void,
+  parentId: string,
+  parentType: 'fridge' | 'recipe',
+  ingredientType: IngredientType | undefined,
+  onSubmitCb?: () => void,
 }
 
 interface AddIngredientFormData {
@@ -22,7 +24,7 @@ interface AddIngredientFormData {
   displayUnit: string,
 }
 
-const AddIngredientForm = ({ ingredientType, onSubmitCb }: AddIngredientFormProps) => {
+const AddIngredientForm = ({ parentId, parentType, ingredientType, onSubmitCb }: AddIngredientFormProps) => {
   const {
     handleSubmit,
     register,
@@ -30,19 +32,30 @@ const AddIngredientForm = ({ ingredientType, onSubmitCb }: AddIngredientFormProp
     reset,
   } = useForm<AddIngredientFormData>();
   
-  const {user} = useUser();
-  if(!user) throw new Error('Must log in');
+  const { measurementUnitOptions } = useMeasurementUnit();
+  const dispatch = useAppDispatch();
+
+  if(ingredientType === undefined) {
+    return (
+      <Box>
+        <Heading size='md'>No ingredient is currently selected...</Heading>
+      </Box>
+    )
+  }
 
   // Get display unit options when creating the ingredient
-  const { measurementUnitOptions } = useMeasurementUnit();
   const displayUnitOptions = getDisplayUnitOptions(measurementUnitOptions, ingredientType);
-
-  const dispatch = useAppDispatch();
+  
   
   const onSubmit = async (data: AddIngredientFormData) => {
     const { displayAmount, displayUnit } = data; 
     try {
-      const ingredient = await IngredientAPI.createIngredient(user.fridgeId, { ingredientTypeId: ingredientType.id, displayAmount, displayUnit });
+      let ingredient;
+      if(parentType === 'fridge') {
+        ingredient = await IngredientAPI.createFridgeIngredient(parentId, { ingredientTypeId: ingredientType.id, displayAmount, displayUnit });
+      } else {
+        ingredient = await IngredientAPI.createRecipeIngredient(parentId, { ingredientTypeId: ingredientType.id, displayAmount, displayUnit })
+      }
       
       // Add ingredient to list of ingredients in fridge
       // Remove ingredient type from those available for user to pick from
@@ -50,7 +63,7 @@ const AddIngredientForm = ({ ingredientType, onSubmitCb }: AddIngredientFormProp
       dispatch(addNewIngredient({ ingredient }));
       dispatch(removeIngredientType({ ingredientTypeId: ingredient.ingredientType.id }));  
 
-      onSubmitCb();
+      onSubmitCb && onSubmitCb();
   
       reset();
     } catch (e) {

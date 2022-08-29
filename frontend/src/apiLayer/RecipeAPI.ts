@@ -23,6 +23,10 @@ const RecipeAPI = {
     const response = await api.get<ResponseWithRecipe>(`/recipes/${recipeId}`, axiosConfig);
     return response.data.recipe;
   },
+  createDraftRecipe: async function() {
+    const response = await api.post<ResponseWithRecipe>(`recipes`);
+    return response.data.recipe;
+  }
 
 }
 

@@ -9,6 +9,10 @@ export const authedNavLinks : NavbarProps['navLinks'] = [
   href: '/recipes',
   label: 'Recipes'
   }, 
+  {
+    href: '/recipes/create',
+    label: 'Create Recipe'
+  }
 ];
 
 export const profileLinks : NavbarProps['navLinks'] = [

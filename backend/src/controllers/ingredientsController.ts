@@ -142,9 +142,7 @@ const updateIngredient = async (
     },
   });
 
-  const updateData : Prisma.IngredientUncheckedUpdateInput = {
-    lastUpdated: new Date(),
-  };
+  const updateData : Prisma.IngredientUncheckedUpdateInput = {};
 
   // Update the amount of ingredient if data is provided
   if (displayAmount && displayUnit) {

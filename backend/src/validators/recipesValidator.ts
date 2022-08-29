@@ -7,13 +7,20 @@ const getRecipeSchema = z.object({
   }),
 });
 
+const recipePublishedSchema = z.object({
+  body: z.object({
+    published: z.preprocess(Boolean, z.boolean()),
+  }),
+});
+
 const createRecipeSchema = z.object({
   body: z.object({
-    title: z.string().min(1),
-    thumbnail: z.string().min(1),
+    title: z.string(),
+    thumbnail: z.string(),
     description: z.string(),
-    instructions: z.string().min(1),
-  }),
+    instructions: z.string(),
+    published: z.preprocess(Boolean, z.boolean().default(false)),
+  }).partial(),
 });
 
 const updateRecipeSchema = z.object({
@@ -24,6 +31,8 @@ const updateRecipeSchema = z.object({
     title: z.string(),
     description: z.string(),
     instructions: z.string(),
+    published: z.preprocess(Boolean, z.boolean()),
+    thumbnail: z.string(),
   }).partial(),
 });
 
@@ -38,6 +47,7 @@ const showOptions = z.enum(['all', 'tailored']);
 const indexRecipesSchema = z.object({
   query: paginationSchema.merge(z.object({
     show: showOptions.default('all'),
+    published: z.preprocess(Boolean, z.boolean()),
   })),
 });
 
@@ -54,4 +64,5 @@ export {
   createRecipeSchema,
   updateRecipeSchema,
   deleteRecipeSchema,
+  recipePublishedSchema,
 };

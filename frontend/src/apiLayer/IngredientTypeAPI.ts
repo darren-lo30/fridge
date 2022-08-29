@@ -6,7 +6,11 @@ const IngredientTypeAPI = {
   indexTailoredIngredientTypes: async function ( options: PaginationParams & SearchParams ) {
     const response = await api.get<ResponseWithIngredientTypes>(`/ingredientTypes`, { params: { show: 'tailored', ...options }});
     return response.data.ingredientTypes;
-  } 
+  },
+  indexAllIngredientTypes: async function(options: PaginationParams & SearchParams ) {
+    const response = await api.get<ResponseWithIngredientTypes>(`/ingredientTypes`, { params: { show: 'all', ...options }});
+    return response.data.ingredientTypes;
+  }
 }
 
 export default IngredientTypeAPI;

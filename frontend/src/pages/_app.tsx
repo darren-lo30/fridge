@@ -15,6 +15,9 @@ import { store } from '@src/store';
 import { MeasurementUnitProvider } from '@src/contexts/MeasurementUnitProvider';
 import RouterGuard from '@src/components/RouterGuard';
 
+import '@src/styles/editor.css';
+
+
 const FridgeNavBar = () => {
   const { user }= useUser();
   return <Navbar navLinks={user ? authedNavLinks : nonAuthedNavLinks} profileLinks={profileLinks} />  

@@ -7,7 +7,8 @@ const filterUniqueIngredientTypes = (array: Array<IngredientType>) : Array<Ingre
   return Array.from(new Map(array.map(item => [item.id, item])).values());
 }
 
-interface ExtendIngredientTypesPayload {
+export interface ExtendIngredientTypesPayload {
+  indexType: 'all' | 'tailored'
   search?: string,
   limit?: number,
 }
@@ -15,18 +16,25 @@ interface ExtendIngredientTypesPayload {
 const defaultLimit = 6;
 export const extendIngredientTypes = createAsyncThunk<IngredientType[], ExtendIngredientTypesPayload, { state: RootState }>(
   '/ingredientTypes/index',
-  async ({ search, limit }, thunkAPI) => {
+  async ({ search, limit, indexType}, thunkAPI) => {
     const ingredientTypes = thunkAPI.getState().ingredientTypeData.ingredientTypes;
-    const newIngredientTypes = await IngredientTypeAPI.indexTailoredIngredientTypes({
+
+    const indexArgs = {
       limit: limit || defaultLimit,
       cursor: ingredientTypes.length > 0 ? ingredientTypes[ingredientTypes.length - 1].id : undefined,
       offset: ingredientTypes.length > 0 ? 1 : 0,
       search,
-    })
+    }
 
-    return newIngredientTypes;
+    if(indexType === 'tailored') {
+      return IngredientTypeAPI.indexTailoredIngredientTypes(indexArgs);
+    } else {
+      return IngredientTypeAPI.indexAllIngredientTypes(indexArgs);
+    }
+
   }
 )
+
 
 interface IngredientTypeState {
   hasMoreIngredientTypes: boolean,

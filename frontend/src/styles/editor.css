@@ -1,0 +1,37 @@
+.ProseMirror h1 {
+  font-weight: bold;
+  font-size: 32px;
+  margin: 1rem 0;
+}
+
+.ProseMirror h2 {
+  font-weight: bold;
+  font-size: 24px;
+  margin: 1rem 0;
+}
+
+
+.ProseMirror h3 {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 1rem 0;
+}
+
+.ProseMirror hr {
+  border-color: rgb(107, 107, 107);
+  width: 95%;
+  margin: 1rem auto;
+}
+
+.ProseMirror:focus-visible {
+  outline: none;
+}
+
+.ProseMirror ul, .ProseMirror ol{
+  padding: 0 1rem;
+}
+
+.ProseMirror * {
+  overflow-wrap: anywhere;
+}
+

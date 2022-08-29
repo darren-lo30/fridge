@@ -63,7 +63,7 @@ model Ingredient {
   recipe            Recipe?         @relation(fields: [recipeId], references: [id])
   amount            Decimal
   displayUnit       String
-  lastUpdated       DateTime        @default(now())
+  lastUpdated       DateTime        @updatedAt
   
   // Every fridge can only list an ingredient type once
   @@unique([ingredientTypeId, fridgeId])
@@ -71,12 +71,13 @@ model Ingredient {
 
 model Recipe {
   id           String       @id @default(uuid())
-  title        String
-  thumbnail    String
-  description  String
+  title        String?
+  thumbnail    String?
+  description  String?
   authorId     String
   author       User         @relation(fields: [authorId], references: [id])
-  instructions String
+  instructions String?      
   postedDate   DateTime     @default(now())
   ingredients  Ingredient[]
+  published    Boolean      @default(false)
 }

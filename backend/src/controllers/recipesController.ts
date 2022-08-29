@@ -144,23 +144,40 @@ const createRecipe = async (
   next: express.NextFunction,
 ) => {
   assertIsAuthed(req);
+
   const {
     body: {
-      instructions, title, description, thumbnail,
+      instructions, title, description, thumbnail, published,
     },
   } = await parseRequest(createRecipeSchema, req);
 
-  const recipe = await prisma.recipe.create({
-    data: {
-      authorId: req.user.id,
-      description,
-      instructions,
-      thumbnail,
-      title,
-    },
-  });
+  try {
+    const recipe = await prisma.recipe.create({
+      data: {
+        authorId: req.user.id,
+        description,
+        instructions,
+        thumbnail,
+        title,
+        published,
+      },
+    });
 
-  return res.json({ recipe });
+    return res.json({ recipe });
+  } catch (e) {
+    // Can not publish recipe
+    const recipe = await prisma.recipe.create({
+      data: {
+        authorId: req.user.id,
+        description,
+        instructions,
+        thumbnail,
+        title,
+        published: false,
+      },
+    });
+    return res.status(202).json({ recipe, message: 'Recipe was created as a draft.' });
+  }
 };
 
 const updateRecipe = async (
@@ -169,21 +186,36 @@ const updateRecipe = async (
   next: express.NextFunction,
 ) => {
   const {
-    body: { instructions, title },
+    body: { instructions, title, published },
     params: { recipeId },
   } = await parseRequest(updateRecipeSchema, req);
 
-  const recipe = await prisma.recipe.update({
-    where: {
-      id: recipeId,
-    },
-    data: {
-      instructions,
-      title,
-    },
-  });
+  try {
+    const recipe = await prisma.recipe.update({
+      where: {
+        id: recipeId,
+      },
+      data: {
+        instructions,
+        title,
+        published,
+      },
+    });
 
-  return res.json({ recipe });
+    return res.json({ recipe });
+  } catch (e) {
+    const recipe = await prisma.recipe.update({
+      where: {
+        id: recipeId,
+      },
+      data: {
+        instructions,
+        title,
+        published: false,
+      },
+    });
+    return res.json({ recipe, message: 'Recipe was set as a draft due to missing content.' });
+  }
 };
 
 const deleteRecipe = async (
