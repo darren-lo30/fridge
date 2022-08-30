@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { Content } from "@tiptap/react";
 import IngredientAPI, { IngredientCreationData } from "@src/apiLayer/IngredientAPI";
 import { addIngredients, addIngredientStart, clearIngredients } from "@src/reducers/ingredientsReducer";
-import { extendIngredientTypes, filterIngredientTypes, removeIngredientType } from "@src/reducers/ingredientTypesReducer";
+import { clearIngredientTypes, extendIngredientTypes, filterIngredientTypes, removeIngredientType } from "@src/reducers/ingredientTypesReducer";
 import { useAppDispatch, useAppSelector } from "@src/utils/hooks";
 import IngredientPreview from "../IngredientPreview";
 import { InputWithError } from "./InputWithError";
@@ -63,10 +63,17 @@ const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
     dispatch(addIngredientStart({ ingredient }));
   }
   
+  const onDrawerOpen = async () => {
+    onOpen();
+
+    // Reload ingredient types
+    dispatch(clearIngredientTypes);
+    await getIngredientTypes();
+  }  
   
   const getIngredientTypes = async (search?: string) => {
     await dispatch(extendIngredientTypes({ indexType: 'all', search, limit: 10}));
-    dispatch(filterIngredientTypes({ removeIds: recipe.ingredients.map((ingredient) => ingredient.ingredientType.id) }));
+    dispatch(filterIngredientTypes({ removeIds: recipeIngredients.map((ingredient) => ingredient.ingredientType.id) }));
   }
   
   
@@ -172,7 +179,7 @@ const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
         </Flex>
         <Flex flexDir={'column'} order={{base: 1, md: 2 }} height='100%' alignItems='start'>
           <Heading size='lg' mb='3'>Ingredients</Heading>
-          <FridgeButton size='sm' textAlign={'left'} ref={btnRef} onClick={onOpen}> Add Ingredient</FridgeButton>
+          <FridgeButton size='sm' textAlign={'left'} ref={btnRef} onClick={onDrawerOpen}> Add Ingredient</FridgeButton>
           <Box py='3' width='100%'>
             {recipeIngredients.map((ingredient) => (
               <IngredientPreview key={ingredient.id} ingredient={ingredient} isEditable={true} />
