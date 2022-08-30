@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { NextPage } from "next"
 
 const Recipes : NextPage = () => {
-  const tabNames = ['Recipes For Me', 'All Recipes', 'My Recipe']
+  const tabNames = ['Recipes For Me', 'All Recipes', 'My Recipes']
   const tabIndexTypes : ('tailored' | 'all' | 'authored')[] = ['tailored', 'all', 'authored']
   return (
     <Tabs width='100%' isLazy={true}>
-      <Flex justifyContent='space-between' width='100%' alignItems='center'>
-        <TabList>
+      <Flex justifyContent='space-between' width='100%' alignItems='center' flexDirection={{base: 'column', md: 'row'}}>
+        <TabList mb='2'>
           { tabNames.map((tabName) => (
             <Tab 
               key={tabName}
@@ -23,7 +23,7 @@ const Recipes : NextPage = () => {
             </Tab>
           ))}
         </TabList>
-        <FridgeLink slidedirection='left' href='/recipes/create'>
+        <FridgeLink slidedirection='left' href='/recipes/new' >
           Create Recipe
         </FridgeLink>
       </Flex>

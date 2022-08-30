@@ -1,7 +1,7 @@
 import express from 'express';
 
 import {
-  getRecipe, indexRecipes, createRecipe, updateRecipe, deleteRecipe,
+  showRecipe, indexRecipes, createRecipe, updateRecipe, deleteRecipe,
 } from '@controllers/recipesController';
 
 import { withRecipeOwnership } from '@src/middleware/restrictionMiddleware';
@@ -9,7 +9,7 @@ import ingredientsRouter from './ingredients';
 
 const router = express.Router({ mergeParams: true });
 
-router.get('/:recipeId', withRecipeOwnership, getRecipe);
+router.get('/:recipeId', withRecipeOwnership, showRecipe);
 router.patch('/:recipeId', withRecipeOwnership, updateRecipe);
 router.delete('/:recipeId', withRecipeOwnership, deleteRecipe);
 router.post('/', createRecipe);

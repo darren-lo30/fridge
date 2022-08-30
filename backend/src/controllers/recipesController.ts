@@ -5,12 +5,13 @@ import { assertIsAuthed } from '@src/utils/assertions';
 import {
   createRecipeSchema,
   deleteRecipeSchema,
-  getRecipeSchema,
+  showRecipeSchema,
   indexRecipesSchema,
   indexUserRecipesSchema,
   updateRecipeSchema,
 } from '@src/validators/recipesValidator';
 import express from 'express';
+import { convertToReturnIngredient } from '@src/utils/unitConversions';
 
 const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, currentUser: User) => {
   // First finds the user's fridge to look for all the ingredients that they have
@@ -49,6 +50,7 @@ const indexTailoredRecipes = async (indexArgs : Prisma.RecipeFindManyArgs, curre
   const recipes = await prisma.recipe.findMany({
     ...indexArgs,
     where: {
+      published: true,
       ingredients: {
         // Runs the condition that every ingredient in the recipe exists in user's fridge and
         // requires amount less than user has
@@ -69,12 +71,15 @@ const indexUserRecipes = async (
 ) => {
   const {
     params: { authorId },
-    query: { cursor, limit, offset },
+    query: {
+      cursor, limit, offset, published,
+    },
   } = await parseRequest(indexUserRecipesSchema, req);
 
   const recipes = await prisma.recipe.findMany({
     where: {
       authorId,
+      published,
     },
     take: limit,
     skip: offset,
@@ -100,6 +105,9 @@ const indexRecipes = async (
   } = await parseRequest(indexRecipesSchema, req);
 
   const indexArgs : Prisma.RecipeFindManyArgs = {
+    where: {
+      published: true,
+    },
     take: limit,
     skip: offset,
     cursor: cursor ? { id: cursor } : undefined,
@@ -119,21 +127,30 @@ const indexRecipes = async (
   return res.json({ recipes });
 };
 
-const getRecipe = async (
+const showRecipe = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  const { params: { recipeId } } = await parseRequest(getRecipeSchema, req);
+  const { params: { recipeId } } = await parseRequest(showRecipeSchema, req);
 
   const recipe = await prisma.recipe.findUniqueOrThrow({
     where: {
       id: recipeId,
     },
     include: {
-      ingredients: true,
+      ingredients: {
+        include: {
+          ingredientType: true,
+        },
+      },
+      author: true,
     },
   });
+
+  recipe.ingredients = recipe.ingredients.map((ingredient) => (
+    convertToReturnIngredient(ingredient)
+  ));
 
   return res.json({ recipe });
 };
@@ -151,13 +168,14 @@ const createRecipe = async (
     },
   } = await parseRequest(createRecipeSchema, req);
 
+  const instructionsJSON = instructions ? JSON.parse(instructions) : undefined;
   try {
     const recipe = await prisma.recipe.create({
       data: {
         authorId: req.user.id,
         description,
-        instructions,
         thumbnail,
+        instructions: instructionsJSON,
         title,
         published,
       },
@@ -170,7 +188,7 @@ const createRecipe = async (
       data: {
         authorId: req.user.id,
         description,
-        instructions,
+        instructions: instructionsJSON,
         thumbnail,
         title,
         published: false,
@@ -186,18 +204,22 @@ const updateRecipe = async (
   next: express.NextFunction,
 ) => {
   const {
-    body: { instructions, title, published },
+    body: {
+      instructions, title, published, description,
+    },
     params: { recipeId },
   } = await parseRequest(updateRecipeSchema, req);
 
+  const instructionsJSON = instructions ? JSON.parse(instructions) : undefined;
   try {
     const recipe = await prisma.recipe.update({
       where: {
         id: recipeId,
       },
       data: {
-        instructions,
+        description,
         title,
+        instructions: instructionsJSON,
         published,
       },
     });
@@ -209,12 +231,14 @@ const updateRecipe = async (
         id: recipeId,
       },
       data: {
-        instructions,
+        description,
         title,
+        instructions: instructionsJSON,
         published: false,
       },
     });
-    return res.json({ recipe, message: 'Recipe was set as a draft due to missing content.' });
+
+    return res.status(202).json({ recipe, message: 'Recipe was set as a draft due to missing content.' });
   }
 };
 
@@ -235,7 +259,7 @@ const deleteRecipe = async (
 export {
   indexRecipes,
   createRecipe,
-  getRecipe,
+  showRecipe,
   updateRecipe,
   indexUserRecipes,
   deleteRecipe,

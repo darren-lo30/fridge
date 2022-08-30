@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import paginationSchema from './shared/paginationSchema';
 
-const getRecipeSchema = z.object({
+const showRecipeSchema = z.object({
   params: z.object({
     recipeId: z.string(),
   }),
@@ -40,7 +40,9 @@ const indexUserRecipesSchema = z.object({
   params: z.object({
     authorId: z.string(),
   }),
-  query: paginationSchema,
+  query: paginationSchema.merge(z.object({
+    published: z.preprocess(Boolean, z.boolean().optional()),
+  })),
 });
 
 const showOptions = z.enum(['all', 'tailored']);
@@ -60,7 +62,7 @@ const deleteRecipeSchema = z.object({
 export {
   indexUserRecipesSchema,
   indexRecipesSchema,
-  getRecipeSchema,
+  showRecipeSchema,
   createRecipeSchema,
   updateRecipeSchema,
   deleteRecipeSchema,

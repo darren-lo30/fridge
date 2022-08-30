@@ -1,7 +1,7 @@
 import type { AppProps } from 'next/app'
 import { authedNavLinks, nonAuthedNavLinks, profileLinks } from '@configs/navConfig';
 import { Box, ChakraProvider, Heading, Text } from '@chakra-ui/react'
-import Navbar from '@components/Navbar';
+import Navbar from '@components/ui/Navbar';
 import {ErrorBoundary} from 'react-error-boundary'
 
 import '@fontsource/inter';
@@ -9,13 +9,13 @@ import theme from '@configs/themeConfig';
 
 import '@configs/themeConfig';
 import { UserProvider, useUser } from '@contexts/UserProvider';
-import { Bounds } from '@components/Bounds';
+import { Bounds } from '@src/components/ui/Bounds';
 import { Provider } from 'react-redux';
 import { store } from '@src/store';
 import { MeasurementUnitProvider } from '@src/contexts/MeasurementUnitProvider';
 import RouterGuard from '@src/components/RouterGuard';
 
-import '@src/styles/editor.css';
+import '@src/styles/editor.css';  
 
 
 const FridgeNavBar = () => {

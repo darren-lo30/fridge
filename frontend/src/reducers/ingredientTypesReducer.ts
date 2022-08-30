@@ -2,10 +2,7 @@ import { IngredientType } from '@fridgeTypes/IngredientType';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import IngredientTypeAPI from '@src/apiLayer/IngredientTypeAPI';
 import { RootState } from '@src/store';
-
-const filterUniqueIngredientTypes = (array: Array<IngredientType>) : Array<IngredientType> => {
-  return Array.from(new Map(array.map(item => [item.id, item])).values());
-}
+import { filterUnique } from '@src/utils/fridge';
 
 export interface ExtendIngredientTypesPayload {
   indexType: 'all' | 'tailored'
@@ -31,7 +28,6 @@ export const extendIngredientTypes = createAsyncThunk<IngredientType[], ExtendIn
     } else {
       return IngredientTypeAPI.indexAllIngredientTypes(indexArgs);
     }
-
   }
 )
 
@@ -50,7 +46,7 @@ const ingredientTypesSlice = createSlice({
   name: 'ingredientTypeData',
   initialState,
   reducers: {
-    addNewIngredientType(state, action: PayloadAction<{ ingredientType: IngredientType}>) {
+    addIngredientTypeStart(state, action: PayloadAction<{ ingredientType: IngredientType}>) {
       return ({
         ...state,
         ingredientTypes: [action.payload.ingredientType, ...state.ingredientTypes],
@@ -67,6 +63,12 @@ const ingredientTypesSlice = createSlice({
         hasMoreIngredientTypes: true,
         ingredientTypes: [],
       });
+    },
+    filterIngredientTypes(state, action: PayloadAction<{ removeIds: string[] }>) {
+      return ({
+        ...state,
+        ingredientTypes: state.ingredientTypes.filter((ingredientType) => !action.payload.removeIds.includes(ingredientType.id)),
+      })
     }
   },
   extraReducers: (builder) => {
@@ -75,10 +77,11 @@ const ingredientTypesSlice = createSlice({
       if(newIngredientTypes.length < (action.meta.arg.limit || defaultLimit)) {
         state.hasMoreIngredientTypes = false;
       }
-      state.ingredientTypes = filterUniqueIngredientTypes([...state.ingredientTypes, ...newIngredientTypes]);
+
+      state.ingredientTypes = filterUnique([...state.ingredientTypes, ...newIngredientTypes]);
     });
   }
 });
 
-export const { addNewIngredientType, removeIngredientType, clearIngredientTypes }  = ingredientTypesSlice.actions;
+export const { addIngredientTypeStart, removeIngredientType, clearIngredientTypes, filterIngredientTypes }  = ingredientTypesSlice.actions;
 export default ingredientTypesSlice.reducer;

@@ -1,17 +1,14 @@
 import {  FormControl, InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
 import { Ingredient } from "@fridgeTypes/Ingredient";
-import IngredientAPI from "@src/apiLayer/IngredientAPI";
 import { useMeasurementUnit } from "@src/contexts/MeasurementUnitProvider";
-import { addOrReplaceIngredient } from "@src/reducers/ingredientsReducer";
 import { getDisplayUnitOptions } from "@src/utils/fridge";
-import { useAppDispatch } from "@src/utils/hooks";
 import { useForm } from "react-hook-form";
 import { FridgeButton } from "./FridgeButton";
 import { InputWithError } from "./InputWithError";
 
 interface UpdateIngredientFormProps {
   ingredient: Ingredient,
-  onUpdate: () => void,
+  onUpdate: (data: UpdateIngredientFormData) => void,
 }
 
 interface UpdateIngredientFormData {
@@ -25,7 +22,7 @@ const UpdateIngredientForm = ({ ingredient, onUpdate } : UpdateIngredientFormPro
     handleSubmit,
   } = useForm<UpdateIngredientFormData>({
     defaultValues: {
-      displayAmount: ingredient.displayAmount,
+      displayAmount: Math.round(ingredient.displayAmount),
       displayUnit: ingredient.displayUnit,
     }
   });
@@ -34,23 +31,8 @@ const UpdateIngredientForm = ({ ingredient, onUpdate } : UpdateIngredientFormPro
   const { measurementUnitOptions } = useMeasurementUnit();
   const displayUnitOptions = getDisplayUnitOptions(measurementUnitOptions, ingredient.ingredientType);
 
-  const dispatch = useAppDispatch();
-
-  const onSubmit = async (data: UpdateIngredientFormData) => {
-    const { displayAmount, displayUnit } = data;
-
-    const updatedIngredient = await IngredientAPI.updateIngredient(ingredient.id, {
-      displayAmount,
-      displayUnit,
-    })
-
-    dispatch(addOrReplaceIngredient({ ingredient: updatedIngredient }));    
-
-    onUpdate();
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} >
+    <form onSubmit={handleSubmit(onUpdate)} >
       <FormControl>
         <InputGroup>
           <InputWithError 

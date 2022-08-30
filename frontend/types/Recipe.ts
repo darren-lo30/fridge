@@ -1,3 +1,4 @@
+import { Ingredient } from "./Ingredient";
 import { User } from "./User";
 
 export interface Recipe {
@@ -6,9 +7,10 @@ export interface Recipe {
   author: User,
   title: string,
   description: string,
-  instructions: string,
+  instructions: JSON,
   postedDate: Date,
-  ingredients: Array<object>
+  ingredients: Array<Ingredient>,
+  published: boolean,
 }
 
 export interface ResponseWithRecipe {

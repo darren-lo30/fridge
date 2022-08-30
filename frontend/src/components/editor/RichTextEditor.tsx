@@ -1,7 +1,7 @@
-import {  Box, Center, Divider, Flex, IconButton, IconButtonProps } from "@chakra-ui/react";
-import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import {  Center, Divider, Flex, IconButton, IconButtonProps } from "@chakra-ui/react";
+import { useEditor, EditorContent, Editor, Content } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { RiListUnordered, RiH1, RiH2, RiH3, RiBold, RiCodeFill, RiItalic, RiStrikethrough, RiParagraph, RiCodeBoxLine, RiDoubleQuotesL, RiSeparator, RiTextWrap, RiArrowGoBackFill, RiArrowGoForwardFill, RiFormatClear} from 'react-icons/ri';
+import { RiListUnordered, RiH1, RiH2, RiH3, RiBold, RiCodeFill, RiItalic, RiStrikethrough, RiParagraph, RiCodeBoxLine, RiDoubleQuotesL, RiSeparator, RiTextWrap, RiArrowGoBackFill, RiArrowGoForwardFill, RiFormatClear, RiListOrdered} from 'react-icons/ri';
 
 const MenuButton = (props: IconButtonProps) => {
   const activeStyles = {
@@ -91,7 +91,7 @@ const MenuBar = ({ editor } : { editor: Editor | null }) => {
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         isActive={editor.isActive('orderedList')}
         aria-label='Ordered list'
-        icon={<RiListUnordered />}
+        icon={<RiListOrdered />}
       />
       <MenuButton
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
@@ -143,17 +143,26 @@ const MenuBar = ({ editor } : { editor: Editor | null }) => {
   );
 }
 
-const RecipeEditor = () => {
+interface RecipeEditorProps {
+  initialContent: Content,
+  setContent: (content: Content) => void,
+}
+
+const RecipeEditor = ({ initialContent, setContent } : RecipeEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
     ],
-  })
+    content: initialContent,
+    onUpdate: ({ editor }) => {
+      setContent(editor.getJSON());
+    }
+  })  
 
   return (
-    <Flex flexDir='column' borderWidth='3px' borderColor='gray.700' borderRadius='5' flex='1' minHeight='100%' width='100%'>
+    <Flex flexDir='column' borderWidth='3px' borderColor='gray.700' borderRadius='5' flex='1' minHeight='100%' width='100%' bg='white'>
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} style={{flex: '1', padding: '1rem', alignItems: 'stretch', display: 'flex', flexBasis: '0', overflowY: 'scroll'}}/>
+      <EditorContent editor={editor} id='proseContainer' style={{flex: '1', padding: '1rem', alignItems: 'stretch', display: 'flex', flexBasis: '0', overflowY: 'scroll'}} />
     </Flex>
   );
 }

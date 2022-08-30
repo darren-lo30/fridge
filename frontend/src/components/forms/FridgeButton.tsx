@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Link, LinkProps, useToken } from "@chakra-ui/react";
+import { Button, ButtonProps, Link, LinkProps, useToken, forwardRef } from "@chakra-ui/react";
 import React from "react";
 
 type Direction = 'left' | 'right' | 'top' | 'bottom';
@@ -37,10 +37,11 @@ const sharedStyles : Partial<ButtonProps & LinkProps> = {
   py:'1',
   px:'3',
   whiteSpace: 'normal',
+  textAlign: 'center',
   overflowWrap: 'break-word',
 }
 
-export const FridgeButton = (props: ButtonProps & {slidedirection?: Direction}) => {
+export const FridgeButton = forwardRef<ButtonProps & {slidedirection?: Direction}, "button">((props, ref) => {
   const [primary, secondary] = useToken(
     'colors',
     ['primary.main', 'secondary.main']
@@ -51,11 +52,12 @@ export const FridgeButton = (props: ButtonProps & {slidedirection?: Direction}) 
     { ...createAnimationProps(primary, secondary, props.slidedirection || 'right' )}
     { ...sharedStyles }
     { ...props }
+    ref={ref}
   >
     {props.children}
   </Button>
   );
-}
+});
 
 export const FridgeLink = (props: LinkProps & {slidedirection?: Direction}) => {
   const [primary, secondary] = useToken(

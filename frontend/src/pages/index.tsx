@@ -25,7 +25,9 @@ const AuthedView = ({ user } : { user: StoredUser }) => {
         <RecipeList indexType='tailored'/>
       </Box>
       
-      <FridgeDisplay boxShadow='md' display='flex' flexDir='column' flex={'1'} p={'5'} rounded={'5'} height='80%' maxHeight='600px' bg={'gray.50'} fridgeId={user.fridgeId} />          
+      <Box bg='gray.50' height='80%' maxHeight='600px'>
+        <FridgeDisplay boxShadow='md' display='flex' flexDir='column' flex={'1'} p={'5'} rounded={'5'} height='100%' fridgeId={user.fridgeId} />          
+      </Box>
     </Flex>
   );
 }

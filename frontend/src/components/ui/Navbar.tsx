@@ -1,7 +1,7 @@
 import { Box, Link, Flex, Text, Menu, MenuButton, MenuItem, HStack, IconButton, useDisclosure, Stack, Center, useColorModeValue, LinkProps, Avatar, MenuList, MenuDivider} from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import appConfig from "@configs/appConfig";
-import Logo from "@components/Logo";
+import Logo from "@components/ui/Logo";
 import { useUser } from "@contexts/UserProvider";
 import { Bounds } from "./Bounds";
 

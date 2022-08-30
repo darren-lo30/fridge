@@ -1,3 +1,7 @@
+.ProseMirror {
+  width: 100%;
+}
+
 .ProseMirror h1 {
   font-weight: bold;
   font-size: 32px;
@@ -33,5 +37,16 @@
 
 .ProseMirror * {
   overflow-wrap: anywhere;
+}
+
+#proseContainer::-webkit-scrollbar  , textarea::-webkit-scrollbar {
+  width: 20px;
+}
+
+#proseContainer::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb {
+  border: 7px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 9999px;
+  background-color: #7a7a7a;
 }
 

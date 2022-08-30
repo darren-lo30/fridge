@@ -3,6 +3,13 @@ import { PaginationParams } from "@fridgeTypes/API";
 import { ResponseWithRecipes, ResponseWithRecipe } from "@fridgeTypes/Recipe";
 import { AxiosRequestConfig } from "axios";
 
+interface RecipeUpdateData {
+  title?: string,
+  description?: string,
+  instructions?: string,
+  published?: boolean,
+}
+
 const RecipeAPI = {
   indexTailoredRecipes: async function (options : PaginationParams) {    
     options.limit = options.limit || 10;
@@ -23,10 +30,17 @@ const RecipeAPI = {
     const response = await api.get<ResponseWithRecipe>(`/recipes/${recipeId}`, axiosConfig);
     return response.data.recipe;
   },
-  createDraftRecipe: async function() {
-    const response = await api.post<ResponseWithRecipe>(`recipes`);
+  createDraftRecipe: async function(axiosConfig: AxiosRequestConfig) {
+    const response = await api.post<ResponseWithRecipe>(`recipes`, { published: false }, axiosConfig);
     return response.data.recipe;
-  }
+  },
+  updateRecipe: async function(recipeId: string, data: RecipeUpdateData) {
+    const response = await api.patch<ResponseWithRecipe>(`recipes/${recipeId}`, data);
+    return response.data.recipe;
+  },
+  deleteRecipe: async function(recipeId: string) {
+    await api.delete(`recipes/${recipeId}`);
+  },
 
 }
 

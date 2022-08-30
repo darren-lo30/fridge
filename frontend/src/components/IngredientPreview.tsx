@@ -4,29 +4,35 @@ import { EditIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import UpdateIngredientForm from "./forms/UpdateIngredientForm";
 import { AnimatePresence, motion } from "framer-motion";
-import IngredientAPI from "@src/apiLayer/IngredientAPI";
-import { removeIngredient } from "@src/reducers/ingredientsReducer";
-import { addNewIngredientType } from "@src/reducers/ingredientTypesReducer";
+import IngredientAPI, { IngredientUpdateData } from "@src/apiLayer/IngredientAPI";
+import { addOrReplaceIngredient, removeIngredient } from "@src/reducers/ingredientsReducer";
 import { useAppDispatch } from "@src/utils/hooks";
 
 interface IngredientPreviewProps {
   ingredient: Ingredient,
+  isEditable: boolean,
+  onDeleteCb?: (deletedIngredient: Ingredient) => void,
+  onUpdateCb?: (updatedIngredient: Ingredient) => void,
 }
 
-const IngredientPreview = ({ ingredient } : IngredientPreviewProps) => {
+const IngredientPreview = ({ ingredient, isEditable, onDeleteCb, onUpdateCb } : IngredientPreviewProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const dispatch = useAppDispatch();
   
-  const onUpdate = () => {
+
+  const updateIngredient = async (data: IngredientUpdateData) => {
+    const updatedIngredient = await IngredientAPI.updateIngredient(ingredient.id, data);
+    dispatch(addOrReplaceIngredient({ingredient: updatedIngredient}));
     setIsEditing(false);
+    onUpdateCb && onUpdateCb(updatedIngredient);
   }
 
   const deleteIngredient = async () => {
     await IngredientAPI.deleteIngredient(ingredient.id);
     dispatch(removeIngredient({ ingredientId: ingredient.id }));
-    dispatch(addNewIngredientType({ ingredientType: ingredient.ingredientType }));
+    onDeleteCb && onDeleteCb(ingredient);
   }
   
   return (
@@ -48,12 +54,12 @@ const IngredientPreview = ({ ingredient } : IngredientPreviewProps) => {
             { ingredient.ingredientType.name }
           </Text>
           <Text fontSize={'xs'} textAlign='left'>
-            { `${ingredient.displayAmount} ${ingredient.displayUnit}` }
+            { `${Math.round(ingredient.displayAmount)} ${ingredient.displayUnit}` }
           </Text>
         </Box>
 
 
-        { (isHovered || isEditing) && (
+        { (isEditable && isHovered || isEditing) && (
           <Box ml='auto'>
             <HStack>
               <IconButton 
@@ -94,7 +100,7 @@ const IngredientPreview = ({ ingredient } : IngredientPreviewProps) => {
               exit={{ maxHeight: '-10px', opacity: 0 }}
             >
               <Box p='3'>
-                <UpdateIngredientForm ingredient={ingredient} onUpdate={onUpdate} />
+                <UpdateIngredientForm ingredient={ingredient} onUpdate={updateIngredient} />
               </Box>
             </Box> 
         )}

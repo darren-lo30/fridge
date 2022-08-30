@@ -22,3 +22,10 @@ export const makeCancelable = (promise: Promise<unknown>) => {
 export const getDisplayUnitOptions = (measurementUnitOptions: MeasurementUnitOptions, ingredientType: IngredientType) => {
   return measurementUnitOptions[ingredientType.measurementType];
 }
+
+interface HasId {
+  id: string,
+}
+export const filterUnique = <T extends HasId>(array : T[]) => {
+  return Array.from(new Map(array.map(item => [item.id, item])).values());
+}

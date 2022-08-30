@@ -1,13 +1,15 @@
 import { Box, BoxProps, Heading } from "@chakra-ui/react";
 import { useEffect, useState } from 'react';
-import { extendIngredients, clearIngredients } from "@src/reducers/ingredientsReducer";
-import FridgeScrollbar from "./FridgeScrollbar";
+import { extendFridgeIngredients, clearIngredients } from "@src/reducers/ingredientsReducer";
+import FridgeScrollbar from "./ui/FridgeScrollbar";
 import { AnimatePresence, motion } from "framer-motion";
 import InfiniteScroll from "react-infinite-scroll-component";
-import FridgeSpinner from "./FridgeSpinner";
-import IngredientPreview from "./IngredientList";
+import FridgeSpinner from "./ui/FridgeSpinner";
+import IngredientPreview from "./IngredientPreview";
 import { useAppDispatch, useAppSelector } from "@src/utils/hooks";
 import { SearchBar } from "./forms/SearchBar";
+import { Ingredient } from "@fridgeTypes/Ingredient";
+import { addIngredientTypeStart } from "@src/reducers/ingredientTypesReducer";
 
 interface FridgeDisplayProps extends BoxProps { fridgeId: string }
 
@@ -18,7 +20,11 @@ const FridgeDisplay = ({ fridgeId, ...props } : FridgeDisplayProps) => {
   const [ search, setSearch ] = useState('');
 
   const getIngredients = async () => {    
-    await dispatch(extendIngredients({ fridgeId, search }));
+    await dispatch(extendFridgeIngredients({ fridgeId, search }));
+  }
+
+  const ingredientDeleteCb = (deletedIngredient: Ingredient) => {
+    dispatch(addIngredientTypeStart({ ingredientType: deletedIngredient.ingredientType }));
   }
 
 
@@ -53,7 +59,7 @@ const FridgeDisplay = ({ fridgeId, ...props } : FridgeDisplayProps) => {
                   as={motion.div}
                   exit={{ opacity: 0 }}              
                 >
-                  <IngredientPreview ingredient={ingredient} />
+                  <IngredientPreview ingredient={ingredient} isEditable={true} onDeleteCb={ingredientDeleteCb} />
                 </Box>
               </AnimatePresence>
             ))}
