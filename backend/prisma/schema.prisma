@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -48,8 +48,6 @@ model IngredientType {
   ingredientInstances Ingredient[]
 
   measurementType MeasurementType
-
-  @@fulltext([name])
 }
 
 // Instances of IngredientType stored in the fridge

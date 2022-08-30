@@ -1,39 +1,35 @@
 version: '3.8'
 services:
-  mysqldb:
-    image: mysql:8
+  postgres:
+    image: postgres:14
     restart: unless-stopped
-    env_file: ./.env
+    env_file: .env.production
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=$POSTGRES_DB
     ports:
-      - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
+      - ${POSTGRES_LOCAL_PORT}:${POSTGRES_DOCKER_PORT}
     volumes:
-      - db:/var/lib/mysql
+      - data:/var/lib/postgresql/data
 
   check-db-started: 
     image: jwilder/dockerize:0.6.1
     depends_on:
-      - mysqldb
-    command: 'dockerize -wait=tcp://mysqldb:3306'
+      - postgres
+    command: 'dockerize -wait=tcp://postgres:5432'
 
-    
   app:
     depends_on:
       - check-db-started
     build: .
-    env_file: ./.env
+    env_file: .env.production
     ports:
       - $NODE_LOCAL_PORT:$APP_PORT
-    environment:
-      - DB_HOST=mysqldb
-      - DB_USER=$MYSQLDB_USER
-      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - DB_NAME=$MYSQLDB_DATABASE
-      - DB_PORT=$MYSQLDB_DOCKER_PORT
     stdin_open: true
+    restart: unless-stopped
     tty: true
 
 volumes: 
-  db:
+  data: {}
+

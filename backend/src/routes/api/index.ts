@@ -16,6 +16,6 @@ router.use('/users', withAuth, usersRouter);
 router.use('/fridges', withAuth, fridgesRouter);
 router.use('/recipes', withAuth, recipesRouter);
 router.use('/ingredients', withAuth, ingredientsRouter);
-router.use('/ingredientTypes', ingredientTypesRouter);
+router.use('/ingredientTypes', withAuth, ingredientTypesRouter);
 router.use('/measurementUnits', measurementUnitsRouter);
 export default router;
