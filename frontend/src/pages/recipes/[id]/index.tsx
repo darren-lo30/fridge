@@ -52,7 +52,7 @@ const RecipePage = ({ recipe }: InferGetServerSidePropsType<typeof getServerSide
         <Heading size='lg'>
           Ingredients
         </Heading>
-        <Stack>
+        <Stack my='5'>
           {recipe.ingredients.map((ingredient) => (
             <IngredientPreview key={ingredient.id} ingredient={ingredient} isEditable={false} />
           ))}

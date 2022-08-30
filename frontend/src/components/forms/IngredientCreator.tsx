@@ -37,7 +37,7 @@ interface IngredientTypeListProps {
   getIngredientTypes: (search?: string) => void,
 }
 
-export const IngredientCreator = ({ getIngredientTypes, gridProps, createIngredient } : IngredientTypeListProps) => {  
+export const IngredientCreator = ({ getIngredientTypes, gridProps, createIngredient: createIngredientCb } : IngredientTypeListProps) => {  
   const ingredientTypes = useAppSelector((state) => state.ingredientTypeData.ingredientTypes);
   const hasMore = useAppSelector((state) => state.ingredientTypeData.hasMoreIngredientTypes);
   const dispatch = useAppDispatch();
@@ -50,6 +50,11 @@ export const IngredientCreator = ({ getIngredientTypes, gridProps, createIngredi
     getIngredientTypes(search);
   }
   
+  const createIngredient = (data: IngredientCreationData) => {
+    setSelectedIngredientType(undefined);
+    createIngredientCb(data);
+  }
+
   useEffect(() => {
     dispatch(clearIngredientTypes());
     void getIngredientTypesSearch();

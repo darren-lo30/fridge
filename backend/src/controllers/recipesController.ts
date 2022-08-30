@@ -205,7 +205,7 @@ const updateRecipe = async (
 ) => {
   const {
     body: {
-      instructions, title, published, description,
+      instructions, title, published, description, thumbnail,
     },
     params: { recipeId },
   } = await parseRequest(updateRecipeSchema, req);
@@ -221,6 +221,7 @@ const updateRecipe = async (
         title,
         instructions: instructionsJSON,
         published,
+        thumbnail,
       },
     });
 
@@ -235,6 +236,7 @@ const updateRecipe = async (
         title,
         instructions: instructionsJSON,
         published: false,
+        thumbnail,
       },
     });
 

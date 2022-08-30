@@ -18,7 +18,7 @@ const AuthButton = (props : LinkProps) => (
 const AuthedView = ({ user } : { user: StoredUser }) => {
   return (
     <Flex flex={'1'} justifyContent={'stretch'} alignItems={'stretch'} gap={'3rem'}>
-      <Box flex={'2'} p={'5'} rounded={'5'}>
+      <Box flex={'4'} p={'5'} rounded={'5'}>
         <Heading size='lg'>
           Recipes For Me
         </Heading>

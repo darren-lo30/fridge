@@ -35,6 +35,7 @@ const IngredientDataForm = ({ ingredientType, onSubmit }: IngredientDataFormProp
   }, [ingredientType]);
 
   const onFormSubmit = (data: IngredientDataFormData) => {
+    reset();
     onSubmit(data);
   }
   

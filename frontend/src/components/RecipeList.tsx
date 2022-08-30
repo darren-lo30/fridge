@@ -33,7 +33,7 @@ const RecipePreview = ({ recipe, isOwned = false, deleteRecipe, ...props} : Reci
           <Text mt={'0.5'} fontSize={'sm'} color={'gray.500'}>
             By { recipe.author.fullName }
           </Text>
-          <Text py={'3'} overflow={'hidden'} textOverflow={'ellipsis'} noOfLines={2}>
+          <Text my={'3'} overflow={'hidden'} textOverflow={'ellipsis'} noOfLines={2}>
             { recipe.description }
           </Text>
           <HStack alignItems={'center'}>

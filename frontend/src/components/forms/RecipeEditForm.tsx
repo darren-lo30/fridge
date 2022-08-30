@@ -1,4 +1,4 @@
-import { SimpleGrid, Flex, Heading,FormLabel, Box, Input, Textarea, FormControl, Switch, HStack, useToast, useDisclosure, Drawer, DrawerOverlay, DrawerContent } from "@chakra-ui/react"
+import { SimpleGrid, Flex, FormErrorMessage, Heading,FormLabel, Box, Input, Textarea, FormControl, Switch, HStack, useToast, useDisclosure, Drawer, DrawerOverlay, DrawerContent } from "@chakra-ui/react"
 import { FridgeButton } from "./FridgeButton"
 import IngredientCreator from "./IngredientCreator"
 import RecipeEditor from "@components/editor/RichTextEditor"
@@ -13,6 +13,7 @@ import { addIngredients, addIngredientStart, clearIngredients } from "@src/reduc
 import { extendIngredientTypes, filterIngredientTypes, removeIngredientType } from "@src/reducers/ingredientTypesReducer";
 import { useAppDispatch, useAppSelector } from "@src/utils/hooks";
 import IngredientPreview from "../IngredientPreview";
+import { InputWithError } from "./InputWithError";
 
 interface RecipeEditFormProps {
   recipe: Recipe,
@@ -22,23 +23,26 @@ interface RecipeEditFormData {
   title: string,
   description: string,
   published: boolean,
+  thumbnail: string,
 }
 
 const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
   const {
     register,
     handleSubmit,
+    formState: { errors },
   } = useForm<RecipeEditFormData>({
     defaultValues: {
       title: recipe.title,
       description: recipe.description,
       published: recipe.published,
+      thumbnail: recipe.thumbnail,
     }
   });
 
   const recipeIngredients = useAppSelector((state) => state.ingredientData.ingredients);
 
-  const [instructions, setInstructions] = useState<Content>(recipe.instructions);
+  const [instructions, setInstructions] = useState<Content>(recipe.instructions || {});
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const toast = useToast();
@@ -53,15 +57,15 @@ const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
   }, [recipe]);
 
 
-
   const createRecipeIngredient = async (data: IngredientCreationData) => {
     const ingredient = await IngredientAPI.createRecipeIngredient(recipe.id, data);
     dispatch(removeIngredientType({ ingredientTypeId: ingredient.ingredientType.id }));
     dispatch(addIngredientStart({ ingredient }));
   }
   
+  
   const getIngredientTypes = async (search?: string) => {
-    await dispatch(extendIngredientTypes({ indexType: 'all', search }));
+    await dispatch(extendIngredientTypes({ indexType: 'all', search, limit: 10}));
     dispatch(filterIngredientTypes({ removeIds: recipe.ingredients.map((ingredient) => ingredient.ingredientType.id) }));
   }
   
@@ -103,63 +107,80 @@ const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
 
   return (
     <>
-        <SimpleGrid templateColumns={{base: '1fr', sm: '4fr 1fr' }} gap='5' height='100%' >
-          <Flex as='form' flexDir='column' order={{base: 2, md: 1 }} onSubmit={handleSubmit(onSave)}>
-            <FormControl>
-              <Input 
-                type='text' 
-                fontSize={'4xl'}
-                fontWeight='bold'
-                mb='3'
-                bg='white'
-                py='2rem'
-                isRequired
-                {...register('title')}
+      <SimpleGrid templateColumns={{base: '1fr', sm: '4fr 1fr' }} gap='5' height='100%' >
+        <Flex as='form' flexDir='column' order={{base: 2, md: 1 }} onSubmit={handleSubmit(onSave)}>
+          <InputWithError 
+            type='text' 
+            fontSize={'4xl'}
+            fontWeight='bold'
+            bg='white'
+            py='2rem'
+            placeholder='Title'
+            {...register('title', {
+              maxLength: {
+                value: 19,
+                message: 'The title must be under 20 characters.'
+              }
+            })}
+            errorMessage={errors.title && errors.title.message}
+          />
+          <FormControl isInvalid={!!errors.description} mt='5'>
+            <Textarea
+              p='3' bg='white' rounded='5'
+              noOfLines={3}
+              resize='none'
+              overflowY={'auto'}
+              placeholder="A brief description of this recipe"
+              {...register('description', {
+                maxLength: {
+                  value: 150,
+                  message: 'The description must be under 150 characters.'
+                }
+              })}
+            />
+            <FormErrorMessage fontSize='xs' mt={'0.5'} color={'red.500'}>{ errors.description && errors.description.message }</FormErrorMessage>
+          </FormControl>
+          <FormControl>
+            <Input
+              type='text'
+              my='2'
+              placeholder='Recipe Image Link'
+              bg='white'
+              {...register('thumbnail')}
+            />
+          </FormControl>
+
+          <Box flex='1' flexBasis='0'>
+            <RecipeEditor initialContent={recipe.instructions} setContent={(content) => {setInstructions(content)}}/>
+          </Box>
+
+          <HStack alignItems={'center'} mt='3' justifyContent={'space-between'}>
+            <FormControl display='flex' width='min-content' alignItems='center'>
+              <FormLabel htmlFor='publish' mb='0' fontWeight='bold'>
+                Publish
+              </FormLabel>
+
+              <Switch 
+                size='lg'
+                id='publish'
+                colorScheme='green'
+                {...register('published')}
               />
             </FormControl>
-            <FormControl>
-              <Textarea
-                isRequired
-                p='3' bg='white' rounded='5' my='2'
-                noOfLines={3}
-                resize='none'
-                overflowY={'auto'}
-                placeholder="A brief description of this recipe"
-                {...register('description')}
-              />
-            </FormControl>
-
-            <Box flex='1' flexBasis='0'>
-              <RecipeEditor initialContent={recipe.instructions} setContent={(content) => {setInstructions(content)}}/>
-            </Box>
-
-            <HStack alignItems={'center'} mt='3' justifyContent={'space-between'}>
-              <FormControl display='flex' width='min-content' alignItems='center'>
-                <FormLabel htmlFor='publish' mb='0' fontWeight='bold'>
-                  Publish
-                </FormLabel>
-
-                <Switch 
-                  size='lg'
-                  id='publish'
-                  colorScheme='green'
-                  {...register('published')}
-                />
-              </FormControl>
-              <FridgeButton px='3rem' alignSelf='start' type='submit' slidedirection='right'>Save</FridgeButton>
-            </HStack>
-          </Flex>
-          <Flex flexDir={'column'} order={{base: 1, md: 2 }} height='100%' alignItems='start'>
-            <Heading size='lg' mb='3'>Ingredients</Heading>
-            <FridgeButton size='sm' textAlign={'left'} ref={btnRef} onClick={onOpen}> Add Ingredient</FridgeButton>
-            <Box py='3' width='100%'>
-              {recipeIngredients.map((ingredient) => (
-                <IngredientPreview key={ingredient.id} ingredient={ingredient} isEditable={true} />
-              ))}
-            </Box>
-          </Flex>
-        </SimpleGrid>
-        
+            <FridgeButton px='3rem' alignSelf='start' type='submit' slidedirection='right'>Save</FridgeButton>
+          </HStack>
+        </Flex>
+        <Flex flexDir={'column'} order={{base: 1, md: 2 }} height='100%' alignItems='start'>
+          <Heading size='lg' mb='3'>Ingredients</Heading>
+          <FridgeButton size='sm' textAlign={'left'} ref={btnRef} onClick={onOpen}> Add Ingredient</FridgeButton>
+          <Box py='3' width='100%'>
+            {recipeIngredients.map((ingredient) => (
+              <IngredientPreview key={ingredient.id} ingredient={ingredient} isEditable={true} />
+            ))}
+          </Box>
+        </Flex>
+      </SimpleGrid>
+      
         
       {/* Side panel */}
       <Drawer

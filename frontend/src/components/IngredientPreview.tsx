@@ -39,7 +39,7 @@ const IngredientPreview = ({ ingredient, isEditable, onDeleteCb, onUpdateCb } : 
     <Box 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      bg={isHovered ? 'gray.100' : 'inherit'}
+      bg={isHovered && isEditable ? 'gray.100' : 'inherit'}
     >
       <Flex width='100%' flexDirection='row' py='3' px='2' alignItems={'center'} borderTopWidth='2px' borderColor={'primary.main'} >
         <Image

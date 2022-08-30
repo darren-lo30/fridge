@@ -1,10 +1,10 @@
-import {  FormControl, InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
+import {  Box, Input, InputGroup, InputRightAddon, Select } from "@chakra-ui/react";
 import { Ingredient } from "@fridgeTypes/Ingredient";
 import { useMeasurementUnit } from "@src/contexts/MeasurementUnitProvider";
 import { getDisplayUnitOptions } from "@src/utils/fridge";
 import { useForm } from "react-hook-form";
 import { FridgeButton } from "./FridgeButton";
-import { InputWithError } from "./InputWithError";
+import { InputErrorWrapper } from "./InputWithError";
 
 interface UpdateIngredientFormProps {
   ingredient: Ingredient,
@@ -20,6 +20,7 @@ const UpdateIngredientForm = ({ ingredient, onUpdate } : UpdateIngredientFormPro
   const { 
     register,
     handleSubmit,
+    formState: { errors },
   } = useForm<UpdateIngredientFormData>({
     defaultValues: {
       displayAmount: Math.round(ingredient.displayAmount),
@@ -32,32 +33,41 @@ const UpdateIngredientForm = ({ ingredient, onUpdate } : UpdateIngredientFormPro
   const displayUnitOptions = getDisplayUnitOptions(measurementUnitOptions, ingredient.ingredientType);
 
   return (
-    <form onSubmit={handleSubmit(onUpdate)} >
-      <FormControl>
-        <InputGroup>
-          <InputWithError 
-            type='number'
-            placeholder='amount'
-            {...register('displayAmount')}
-          />
-          <InputRightAddon p='0'>
-            <Select 
-             borderWidth='0'
-              minWidth='max-content'
-              isRequired={true}
-              {...register('displayUnit')}
-            >
-              {
-                displayUnitOptions.map((measurementUnit) => (
-                  <option key={measurementUnit} value={measurementUnit}>{ measurementUnit }</option>
-                ))
-              }
-            </Select>
-          </InputRightAddon>
-        </InputGroup>
-      </FormControl>
-      <FridgeButton mt='3' type='submit'>Update</FridgeButton>
-    </form>
+    <Box>
+      <form onSubmit={handleSubmit(onUpdate)} >
+        <InputErrorWrapper errorMessage={errors.displayAmount && errors.displayAmount.message}>
+          <InputGroup>
+            <Input 
+              type='number'
+              placeholder='amount'
+              {...register('displayAmount', {
+                max: { 
+                  value: 9999,
+                  message: 'Maximum amount of ingredient is 9999',
+                }
+              })}
+              width='0px'
+              flex='1'
+            />
+            <InputRightAddon p='0'>
+              <Select 
+              borderWidth='0'
+                minWidth='max-content'
+                isRequired={true}
+                {...register('displayUnit')}
+              >
+                {
+                  displayUnitOptions.map((measurementUnit) => (
+                    <option key={measurementUnit} value={measurementUnit}>{ measurementUnit }</option>
+                  ))
+                }
+              </Select>
+            </InputRightAddon>
+          </InputGroup>
+        </InputErrorWrapper>
+        <FridgeButton mt='3' type='submit'>Update</FridgeButton>
+      </form>
+    </Box>
   )
 }
 

@@ -8,6 +8,7 @@ interface RecipeUpdateData {
   description?: string,
   instructions?: string,
   published?: boolean,
+  thumbnail?: string,
 }
 
 const RecipeAPI = {

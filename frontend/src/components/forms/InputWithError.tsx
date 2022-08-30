@@ -17,7 +17,7 @@ export const InputWithError = forwardRef<InputProps & { errorMessage?: string, l
     <InputErrorWrapper errorMessage={errorMessage}>
       { label ? (<FormLabel>{ label }</FormLabel>) : null }
       <Input 
-        aria-invalid={false}
+        // aria-invalid={false}
         { ...inputProps }
         ref={ref}
       />     
