@@ -35,7 +35,7 @@ const Fridge : NextPage = () => {
 
   return (
     <Box flex='1'>
-       <Grid flex='1' templateColumns='minmax(250px, 1fr) 2fr' w='100%' height='100%' gap='5'>
+       <Grid flex='1' templateColumns={{base: '1fr', sm: 'minmax(250px, 1fr) 2fr'}} w='100%' height='100%' gap='5'>
         <GridItem p='5' bg='gray.50' rounded='5' height='100%' boxShadow='sm'>
           <Box>
             <FridgeDisplay height='100%' fridgeId={user.fridgeId} />

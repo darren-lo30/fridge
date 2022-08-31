@@ -13,7 +13,7 @@ export const authedNavLinks : NavbarProps['navLinks'] = [
 
 export const profileLinks : NavbarProps['navLinks'] = [
   {
-    href: 'account',
+    href: '/account',
     label: 'My Account'
   },
   { 

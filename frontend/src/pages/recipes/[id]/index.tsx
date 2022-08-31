@@ -67,7 +67,7 @@ const RecipePage = ({ recipe }: InferGetServerSidePropsType<typeof getServerSide
         </Heading>
         { user && user.id === recipe.author.id && (
           <Box ml='auto'>
-            <Link href={`/recipes/${recipe.id}/edit`} p='2'>
+            <Link href={`/recipes/${recipe.id}/edit`} display='inline-block'>
               <IconButton 
                 icon={<RiPencilLine />} 
                 aria-label={"Edit Recipe"} 

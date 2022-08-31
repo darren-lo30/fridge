@@ -4,6 +4,7 @@ import appConfig from "@configs/appConfig";
 import Logo from "@components/ui/Logo";
 import { useUser } from "@contexts/UserProvider";
 import { Bounds } from "./Bounds";
+import { profile } from "console";
 
 export type NavbarProps = {
   navLinks: Array<{ href: string, label: string}>,
@@ -31,7 +32,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
   return (
     <Bounds>
       <Box pos={'relative'} >
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+        <Flex h={16} alignItems={'center'} justifyContent={'space-between'} flexWrap='wrap'>
           <Link 
             href={'/'}
             _hover={{
@@ -106,7 +107,7 @@ const Navbar = ({ navLinks, profileLinks }: NavbarProps) =>{
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4}>
               <Flex direction={'column'}>
-                {navLinks.map((link) => (
+                {[...navLinks, ...profileLinks].map((link) => (
                   <NavLink key={link.href} href={link.href}>{link.label}</NavLink>
                 ))}
               </Flex>

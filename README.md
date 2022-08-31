@@ -5,6 +5,8 @@ This project aims to simplify the process of cooking for yourself. Built with Ne
 
 Deployed with Vercel, Heroku, and Docker.
 
+[Live Now](https://vercel.com/darren-lo30/fridge)
+
 ## Getting Started
 
 ### Backend
@@ -32,3 +34,4 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the website.
+

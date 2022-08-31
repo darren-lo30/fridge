@@ -177,14 +177,14 @@ const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
             <FridgeButton px='3rem' alignSelf='start' type='submit' slidedirection='right'>Save</FridgeButton>
           </HStack>
         </Flex>
-        <Flex flexDir={'column'} order={{base: 1, md: 2 }} height='100%' alignItems='start'>
+        <Flex flexDir={'column'} order={{base: 1, md: 2 }} height={{base: 'min-content', md: '100%'}} alignItems='start'>
           <Heading size='lg' mb='3'>Ingredients</Heading>
           <FridgeButton size='sm' textAlign={'left'} ref={btnRef} onClick={onDrawerOpen}> Add Ingredient</FridgeButton>
-          <Box py='3' width='100%'>
+          { recipe.ingredients.length > 0 && (<Box py='3' width='100%'>
             {recipeIngredients.map((ingredient) => (
               <IngredientPreview key={ingredient.id} ingredient={ingredient} isEditable={true} />
             ))}
-          </Box>
+          </Box>) }
         </Flex>
       </SimpleGrid>
       
