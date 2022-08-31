@@ -37,6 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.enable('trust proxy');
+
 // Use passport middleware
 app.use(session({
   secret: getEnvVar('NODE_ENV'),
@@ -52,10 +54,13 @@ app.use(session({
       sessionModelName: 'session',
     },
   ),
+  proxy: true,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: 'none',
-    secure: true,
+    ...(process.env.NODE_ENV === 'production' ? {
+      sameSite: 'none',
+      secure: true,
+    } : {}),
   },
 }));
 
