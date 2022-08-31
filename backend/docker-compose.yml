@@ -25,7 +25,7 @@ services:
     build: .
     env_file: .env.production
     ports:
-      - $NODE_LOCAL_PORT:$APP_PORT
+      - $NODE_LOCAL_PORT:$PORT
     stdin_open: true
     restart: unless-stopped
     tty: true
