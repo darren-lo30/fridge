@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:14
     restart: unless-stopped
-    env_file: .env.production
+    env_file: .env
     environment:
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
@@ -23,7 +23,7 @@ services:
     depends_on:
       - check-db-started
     build: .
-    env_file: .env.production
+    env_file: .env
     ports:
       - $NODE_LOCAL_PORT:$PORT
     stdin_open: true
