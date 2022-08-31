@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=$POSTGRES_DB
+    ports:
+      - ${POSTGRES_LOCAL_PORT}:${POSTGRES_DOCKER_PORT}
+    volumes:
+      - data:/var/lib/postgresql/data
+
+  check-db-started: 
+    image: jwilder/dockerize:0.6.1
+    depends_on:
+      - postgres
+    command: 'dockerize -wait=tcp://postgres:5432'
+
+  app:
+    depends_on:
+      - check-db-started
+    build: .
+    env_file: .env.production
+    ports:
+      - $NODE_LOCAL_PORT:$APP_PORT
+    stdin_open: true
+    restart: unless-stopped
+    tty: true
+
+volumes: 
+  data: {}
+

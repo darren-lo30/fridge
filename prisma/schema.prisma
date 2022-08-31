@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  expiresAt DateTime
+  data      String
+}
+
+model User {
+  id       String   @id @default(uuid())
+  fullName String
+  email    String   @unique
+  password String
+  fridge   Fridge?
+  recipes  Recipe[]
+}
+
+model Fridge {
+  id          String       @id @default(uuid())
+  userId      String       @unique
+  user        User         @relation(fields: [userId], references: [id])
+  ingredients Ingredient[]
+}
+
+enum MeasurementType {
+  discrete_no // defaults to number
+  volume_mL // defaults to mL
+  weight_g // defaults to grams
+}
+
+// Server generate instances of ingredients
+model IngredientType {
+  id                  String       @id @default(uuid())
+  name                String       @unique
+  imageUrl            String
+  ingredientInstances Ingredient[]
+
+  measurementType MeasurementType
+}
+
+// Instances of IngredientType stored in the fridge
+model Ingredient {
+  id                String          @id @default(uuid())
+  ingredientTypeId  String
+  ingredientType    IngredientType  @relation(fields: [ingredientTypeId], references: [id])
+  fridgeId          String?
+  fridge            Fridge?         @relation(fields: [fridgeId], references: [id])
+  recipeId          String?
+  recipe            Recipe?         @relation(fields: [recipeId], references: [id])
+  amount            Decimal
+  displayUnit       String
+  lastUpdated       DateTime        @updatedAt
+  
+  // Every fridge can only list an ingredient type once
+  @@unique([ingredientTypeId, fridgeId])
+}
+
+model Recipe {
+  id           String       @id @default(uuid())
+  title        String       @default("Untitled")
+  thumbnail    String?
+  description  String?
+  authorId     String
+  author       User         @relation(fields: [authorId], references: [id])
+  instructions Json?     
+  postedDate   DateTime     @default(now())
+  ingredients  Ingredient[]
+  published    Boolean      @default(false)
+}
