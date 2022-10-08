@@ -11,7 +11,12 @@ export const getServerSideProps : GetServerSideProps = async (context) => {
       }
     });
   } catch (e) {
-    console.log('bad');
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/recipes/${context.req.cookies['connect.sid'] || ''}/edit`
+      }
+    };
   }
 
 
