@@ -20,7 +20,12 @@ interface IngredientTypeCardProps {
 const IngredientTypeCard = ({ ingredientType, selectIngredientType } : IngredientTypeCardProps) => {
   return (
     <Box roundedTop='5' key={ingredientType.id} bg='gray.50' overflow='hidden' boxShadow='sm' borderBottomColor='secondary.200' borderBottomWidth='3px' >
-      <Image src={ingredientType.imageUrl || '/placeholder.svg'} alt={`Image of ${ingredientType.name}`} />
+      <Image 
+        width='100%'
+        height='200px'
+        objectFit='cover'
+        src={ingredientType.imageUrl || '/placeholder.svg'} 
+        alt={`Image of ${ingredientType.name}`} />
       <Box p='5'>
         <Heading size='md'>
           {ingredientType.name}

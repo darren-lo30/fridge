@@ -3,11 +3,17 @@ import RecipeAPI from "@src/apiLayer/RecipeAPI";
 
 
 export const getServerSideProps : GetServerSideProps = async (context) => {
-  // const recipe = await RecipeAPI.createDraftRecipe({
-  //   headers: {
-  //     Cookie: `connect.sid=${context.req.cookies['connect.sid'] || '' }`
-  //   }
-  // });
+  try {
+
+    const recipe = await RecipeAPI.createDraftRecipe({
+      headers: {
+        Cookie: `connect.sid=${context.req.cookies['connect.sid'] || '' }`
+      }
+    });
+  } catch (e) {
+    console.log('bad');
+  }
+
 
 
   return {
