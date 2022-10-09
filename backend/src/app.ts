@@ -57,11 +57,11 @@ app.use(session({
   proxy: true,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
-    ...(getEnvVar('NODE_ENV') === 'production' ? {
-      sameSite: 'none',
-      secure: true,
-      // domain: getEnvVar('SUBDOMAIN'),
-    } : {}),
+    sameSite: 'none',
+    secure: true,
+    // ...(getEnvVar('NODE_ENV') === 'production' ? {
+    //   // domain: getEnvVar('SUBDOMAIN'),
+    // } : {}),
   },
 }));
 
