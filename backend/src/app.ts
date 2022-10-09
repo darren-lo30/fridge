@@ -41,7 +41,7 @@ app.enable('trust proxy');
 
 // Use passport middleware
 app.use(session({
-  secret: getEnvVar('NODE_ENV'),
+  secret: getEnvVar('SESSION_SECRET'),
   resave: false,
   saveUninitialized: false,
   store: new PrismaSessionStore(
@@ -57,10 +57,10 @@ app.use(session({
   proxy: true,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
-    ...(process.env.NODE_ENV === 'production' ? {
+    ...(getEnvVar('NODE_ENV') === 'production' ? {
       sameSite: 'none',
       secure: true,
-      domain: process.env.SUBDOMAIN,
+      // domain: getEnvVar('SUBDOMAIN'),
     } : {}),
   },
 }));
