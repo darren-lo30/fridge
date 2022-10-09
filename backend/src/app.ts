@@ -60,6 +60,7 @@ app.use(session({
     ...(process.env.NODE_ENV === 'production' ? {
       sameSite: 'none',
       secure: true,
+      domain: process.env.SUBDOMAIN,
     } : {}),
   },
 }));
