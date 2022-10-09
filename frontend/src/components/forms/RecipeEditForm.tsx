@@ -180,7 +180,7 @@ const RecipeEditForm = ({ recipe } : RecipeEditFormProps) => {
         <Flex flexDir={'column'} order={{base: 1, md: 2 }} height={{base: 'min-content', md: '100%'}} alignItems='start'>
           <Heading size='lg' mb='3'>Ingredients</Heading>
           <FridgeButton size='sm' textAlign={'left'} ref={btnRef} onClick={onDrawerOpen}> Add Ingredient</FridgeButton>
-          { recipe.ingredients.length > 0 && (<Box py='3' width='100%'>
+          { recipeIngredients.length > 0 && (<Box py='3' width='100%'>
             {recipeIngredients.map((ingredient) => (
               <IngredientPreview key={ingredient.id} ingredient={ingredient} isEditable={true} />
             ))}
