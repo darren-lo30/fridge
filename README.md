@@ -3,9 +3,9 @@
 ## Overview
 This project aims to simplify the process of cooking for yourself. Built with NextJS and Express. It keeps track of the ingredients in your fridge and based on these ingredients, it recommends recipes you can cook.
 
-Deployed with Vercel, Heroku, and Docker.
+Deployed with Vercel, Heroku, and Docker. Switched over to Railway from Heroku.
 
-[Live Now](https://vercel.com/darren-lo30/fridge)
+[Live Now](https://www.fridgeapp.me/)
 
 ## Getting Started
 
